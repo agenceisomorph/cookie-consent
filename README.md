@@ -1,6 +1,6 @@
-# @isomorph/cookie-consent
+# @isomorph-agency/cookie-consent
 
-[![npm version](https://img.shields.io/npm/v/@isomorph/cookie-consent.svg)](https://www.npmjs.com/package/@isomorph/cookie-consent)
+[![npm version](https://img.shields.io/npm/v/@isomorph-agency/cookie-consent.svg)](https://www.npmjs.com/package/@isomorph-agency/cookie-consent)
 [![Strapi v5](https://img.shields.io/npm/v/strapi-plugin-cookie-consent.svg?label=strapi-v5-plugin)](https://www.npmjs.com/package/strapi-plugin-cookie-consent)
 [![Strapi v4](https://img.shields.io/npm/v/strapi-plugin-cookie-consent-v4.svg?label=strapi-v4-plugin)](https://www.npmjs.com/package/strapi-plugin-cookie-consent-v4)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
@@ -31,7 +31,7 @@ Most cookie consent tools are either paid SaaS (Axeptio, Cookiebot, OneTrust) or
 
 | Package | Description | Install |
 |---------|-------------|---------|
-| [`@isomorph/cookie-consent`](./packages/react) | React components + TypeScript core | `npm i @isomorph/cookie-consent` |
+| [`@isomorph-agency/cookie-consent`](./packages/react) | React components + TypeScript core | `npm i @isomorph-agency/cookie-consent` |
 | [`strapi-plugin-cookie-consent`](./packages/strapi-v5) | Strapi v5 plugin | `npm i strapi-plugin-cookie-consent` |
 | [`strapi-plugin-cookie-consent-v4`](./packages/strapi-v4) | Strapi v4 plugin | `npm i strapi-plugin-cookie-consent-v4` |
 
@@ -72,7 +72,7 @@ Restart Strapi. The plugin auto-creates the `cookie-consents` collection and con
 ### 2. Install the React package
 
 ```bash
-npm install @isomorph/cookie-consent
+npm install @isomorph-agency/cookie-consent
 ```
 
 ### 3. Set up your Next.js layout
@@ -82,7 +82,7 @@ The order in `layout.tsx` is critical for GCM V2 compliance:
 ```tsx
 // src/app/layout.tsx
 import Script from 'next/script';
-import { getInlineConsentScript } from '@isomorph/cookie-consent';
+import { getInlineConsentScript } from '@isomorph-agency/cookie-consent';
 import { CookieConsentWrapper } from '@/components/CookieConsentWrapper';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -111,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // src/components/CookieConsentWrapper.tsx
 'use client';
 
-import { CookieProvider, CookieBanner, CookiePreferences } from '@isomorph/cookie-consent/react';
+import { CookieProvider, CookieBanner, CookiePreferences } from '@isomorph-agency/cookie-consent/react';
 
 export function CookieConsentWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -131,7 +131,7 @@ export function CookieConsentWrapper({ children }: { children: React.ReactNode }
 
 ```tsx
 'use client';
-import { useConsent } from '@isomorph/cookie-consent/react';
+import { useConsent } from '@isomorph-agency/cookie-consent/react';
 
 export function Footer() {
   const { openPreferences } = useConsent();
@@ -152,7 +152,7 @@ That's it. The banner shows on first visit, consent is logged in Strapi, and GCM
 Components that depend on cookies display an informative facade with a one-click activation button when consent is missing.
 
 ```tsx
-import { YoutubeEmbed, GoogleMap, BlockedContent } from '@isomorph/cookie-consent/react';
+import { YoutubeEmbed, GoogleMap, BlockedContent } from '@isomorph-agency/cookie-consent/react';
 
 // YouTube — loads youtube-nocookie.com iframe when consented
 <YoutubeEmbed videoId="dQw4w9WgXcQ" title="Demo video" />

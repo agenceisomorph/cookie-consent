@@ -1,5 +1,5 @@
 {
-  "name": "@isomorph/cookie-consent",
+  "name": "@isomorph-agency/cookie-consent",
   "version": "1.0.0",
   "description": "GDPR cookie consent banner for React / Next.js — Google Consent Mode V2, CNIL-compliant, WCAG 2.1 AA accessible",
   "main": "./dist/index.js",
@@ -35,7 +35,7 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
-    "@isomorph/cookie-consent-shared": "*"
+    "@isomorph-agency/cookie-consent-shared": "*"
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
