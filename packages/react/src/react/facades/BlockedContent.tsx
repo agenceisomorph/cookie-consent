@@ -66,13 +66,9 @@ export function BlockedContent({
       role="region"
       aria-label={`${contentName} — consentement requis`}
     >
-      <p className="mb-1 text-base font-semibold text-gray-700">
-        {contentName}
-      </p>
+      <p className="mb-1 text-base font-semibold text-gray-700">{contentName}</p>
 
-      <p className="mb-4 max-w-sm text-sm text-gray-500">
-        {message ?? defaultMessage}
-      </p>
+      <p className="mb-4 max-w-sm text-sm text-gray-500">{message ?? defaultMessage}</p>
 
       <button
         type="button"

@@ -4,11 +4,7 @@
  */
 
 import type { ConsentState } from '../types/consent.types';
-import {
-  parseConsentFromCookie,
-  serializeConsent,
-  DEFAULT_EXPIRY_MONTHS,
-} from './consent';
+import { parseConsentFromCookie, serializeConsent, DEFAULT_EXPIRY_MONTHS } from './consent';
 
 /** Nom du cookie first-party */
 export const COOKIE_NAME = 'isomorph_consent';
@@ -41,15 +37,11 @@ export function writeConsent(
     domain?: string;
     path?: string;
     expiryMonths?: number;
-  } = {}
+  } = {},
 ): void {
   if (typeof document === 'undefined') return;
 
-  const {
-    domain,
-    path = '/',
-    expiryMonths = DEFAULT_EXPIRY_MONTHS,
-  } = options;
+  const { domain, path = '/', expiryMonths = DEFAULT_EXPIRY_MONTHS } = options;
 
   const consentDate = new Date();
   const value = serializeConsent(state, consentDate, expiryMonths);
@@ -63,10 +55,7 @@ export function writeConsent(
   }
 
   // Secure uniquement en HTTPS (pas en dev localhost)
-  if (
-    typeof window !== 'undefined' &&
-    window.location.protocol === 'https:'
-  ) {
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
     cookieString += '; Secure';
   }
 
@@ -76,9 +65,7 @@ export function writeConsent(
 /**
  * Supprime le cookie de consentement.
  */
-export function clearConsent(
-  options: { domain?: string; path?: string } = {}
-): void {
+export function clearConsent(options: { domain?: string; path?: string } = {}): void {
   if (typeof document === 'undefined') return;
 
   const { domain, path = '/' } = options;

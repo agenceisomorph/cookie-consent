@@ -165,13 +165,13 @@ describe('consentStateToGcm', () => {
 // ─── setDefaultConsent ───────────────────────────────────────────
 
 describe('setDefaultConsent', () => {
-  it('crée window.dataLayer s\'il n\'existe pas', () => {
+  it("crée window.dataLayer s'il n'existe pas", () => {
     setDefaultConsent();
     expect(window.dataLayer).toBeDefined();
     expect(Array.isArray(window.dataLayer)).toBe(true);
   });
 
-  it('crée window.gtag s\'il n\'existe pas', () => {
+  it("crée window.gtag s'il n'existe pas", () => {
     setDefaultConsent();
     expect(typeof window.gtag).toBe('function');
   });

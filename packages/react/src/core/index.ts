@@ -13,13 +13,7 @@ export {
   generateSessionId,
 } from './consent';
 
-export {
-  COOKIE_NAME,
-  readConsent,
-  writeConsent,
-  clearConsent,
-  hasValidConsent,
-} from './storage';
+export { COOKIE_NAME, readConsent, writeConsent, clearConsent, hasValidConsent } from './storage';
 
 export {
   GCM_SIGNAL_MAP,

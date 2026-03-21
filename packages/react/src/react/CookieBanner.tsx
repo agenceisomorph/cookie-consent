@@ -29,7 +29,7 @@ export interface CookieBannerProps {
 }
 
 export function CookieBanner({
-  message = 'Ce site utilise des cookies pour améliorer votre expérience, mesurer l\'audience et personnaliser les contenus.',
+  message = "Ce site utilise des cookies pour améliorer votre expérience, mesurer l'audience et personnaliser les contenus.",
   acceptLabel = 'Tout accepter',
   refuseLabel = 'Tout refuser',
   customizeLabel = 'Personnaliser',

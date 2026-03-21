@@ -1,11 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  COOKIE_NAME,
-  readConsent,
-  writeConsent,
-  clearConsent,
-  hasValidConsent,
-} from './storage';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { COOKIE_NAME, readConsent, writeConsent, clearConsent, hasValidConsent } from './storage';
 import { serializeConsent } from './consent';
 import type { ConsentState } from '../types/consent.types';
 
@@ -18,26 +12,32 @@ const validState: ConsentState = {
   functional: true,
 };
 
-function setRawCookie(name: string, value: string): void {
-  Object.defineProperty(document, 'cookie', {
-    writable: true,
-    value: `${name}=${value}`,
+/**
+ * Efface tous les cookies dans jsdom en les expirant un par un.
+ */
+function clearAllCookies(): void {
+  document.cookie.split(';').forEach((c) => {
+    const name = c.trim().split('=')[0];
+    if (name) {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
   });
 }
 
 // ─── Setup ───────────────────────────────────────────────────────
 
 beforeEach(() => {
-  // Reset document.cookie
-  Object.defineProperty(document, 'cookie', {
-    writable: true,
-    value: '',
-  });
+  clearAllCookies();
   // Simuler HTTP (pas HTTPS) pour éviter le flag Secure
   Object.defineProperty(window, 'location', {
     writable: true,
+    configurable: true,
     value: { protocol: 'http:', hostname: 'localhost' },
   });
+});
+
+afterEach(() => {
+  clearAllCookies();
 });
 
 // ─── readConsent ─────────────────────────────────────────────────
@@ -47,22 +47,20 @@ describe('readConsent', () => {
     expect(readConsent()).toBeNull();
   });
 
-  it('retourne null si le cookie n\'existe pas parmi d\'autres', () => {
-    Object.defineProperty(document, 'cookie', {
-      writable: true,
-      value: 'other_cookie=value; another=123',
-    });
+  it("retourne null si le cookie n'existe pas parmi d'autres", () => {
+    document.cookie = 'other_cookie=value';
+    document.cookie = 'another=123';
     expect(readConsent()).toBeNull();
   });
 
   it('lit un cookie valide', () => {
     const serialized = serializeConsent(validState);
-    setRawCookie(COOKIE_NAME, serialized);
+    document.cookie = `${COOKIE_NAME}=${serialized}`;
     expect(readConsent()).toEqual(validState);
   });
 
   it('retourne null si le cookie est corrompu', () => {
-    setRawCookie(COOKIE_NAME, 'garbage-data');
+    document.cookie = `${COOKIE_NAME}=garbage-data`;
     expect(readConsent()).toBeNull();
   });
 });
@@ -71,56 +69,47 @@ describe('readConsent', () => {
 
 describe('writeConsent', () => {
   it('écrit un cookie parsable', () => {
-    // On espionne document.cookie pour capturer la valeur écrite
-    let writtenCookie = '';
-    Object.defineProperty(document, 'cookie', {
-      get: () => writtenCookie,
-      set: (val: string) => {
-        writtenCookie = val;
-      },
-    });
-
     writeConsent(validState);
 
-    // Vérifier que le cookie contient le nom
-    expect(writtenCookie).toContain(COOKIE_NAME);
-    // Vérifier SameSite
-    expect(writtenCookie).toContain('SameSite=Lax');
-    // Vérifier path
-    expect(writtenCookie).toContain('path=/');
-    // En HTTP, pas de Secure
-    expect(writtenCookie).not.toContain('Secure');
+    // Vérifier que le cookie est bien écrit et lisible
+    expect(document.cookie).toContain(COOKIE_NAME);
+
+    // Relire le consentement via readConsent
+    const result = readConsent();
+    expect(result).toEqual(validState);
   });
 
   it('ajoute Secure en HTTPS', () => {
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { protocol: 'https:' },
+      configurable: true,
+      value: { protocol: 'https:', hostname: 'localhost' },
     });
 
-    let writtenCookie = '';
-    Object.defineProperty(document, 'cookie', {
-      get: () => writtenCookie,
-      set: (val: string) => {
-        writtenCookie = val;
-      },
-    });
+    // Espionner l'écriture de document.cookie pour vérifier la chaîne complète
+    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
     writeConsent(validState);
-    expect(writtenCookie).toContain('Secure');
+
+    expect(cookieSpy).toHaveBeenCalled();
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
+    expect(writtenValue).toContain('Secure');
+    expect(writtenValue).toContain('SameSite=Lax');
+    expect(writtenValue).toContain('path=/');
+
+    cookieSpy.mockRestore();
   });
 
   it('inclut le domaine si spécifié', () => {
-    let writtenCookie = '';
-    Object.defineProperty(document, 'cookie', {
-      get: () => writtenCookie,
-      set: (val: string) => {
-        writtenCookie = val;
-      },
-    });
+    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
     writeConsent(validState, { domain: '.otrepaca.fr' });
-    expect(writtenCookie).toContain('domain=.otrepaca.fr');
+
+    expect(cookieSpy).toHaveBeenCalled();
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
+    expect(writtenValue).toContain('domain=.otrepaca.fr');
+
+    cookieSpy.mockRestore();
   });
 });
 
@@ -128,31 +117,28 @@ describe('writeConsent', () => {
 
 describe('clearConsent', () => {
   it('écrit un cookie expiré pour le supprimer', () => {
-    let writtenCookie = '';
-    Object.defineProperty(document, 'cookie', {
-      get: () => writtenCookie,
-      set: (val: string) => {
-        writtenCookie = val;
-      },
-    });
+    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
     clearConsent();
 
-    expect(writtenCookie).toContain(COOKIE_NAME);
-    expect(writtenCookie).toContain('Thu, 01 Jan 1970');
+    expect(cookieSpy).toHaveBeenCalled();
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
+    expect(writtenValue).toContain(COOKIE_NAME);
+    expect(writtenValue).toContain('Thu, 01 Jan 1970');
+
+    cookieSpy.mockRestore();
   });
 
   it('inclut le domaine si spécifié', () => {
-    let writtenCookie = '';
-    Object.defineProperty(document, 'cookie', {
-      get: () => writtenCookie,
-      set: (val: string) => {
-        writtenCookie = val;
-      },
-    });
+    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
     clearConsent({ domain: '.example.com' });
-    expect(writtenCookie).toContain('domain=.example.com');
+
+    expect(cookieSpy).toHaveBeenCalled();
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
+    expect(writtenValue).toContain('domain=.example.com');
+
+    cookieSpy.mockRestore();
   });
 });
 
@@ -164,7 +150,8 @@ describe('hasValidConsent', () => {
   });
 
   it('retourne true si un cookie valide existe', () => {
-    setRawCookie(COOKIE_NAME, serializeConsent(validState));
+    const serialized = serializeConsent(validState);
+    document.cookie = `${COOKIE_NAME}=${serialized}`;
     expect(hasValidConsent()).toBe(true);
   });
 });

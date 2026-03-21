@@ -17,11 +17,7 @@ export const DEFAULT_EXPIRY_MONTHS = 13;
 export const COOKIE_DATA_VERSION = '1';
 
 /** Catégories disponibles (hors "necessary" qui est toujours actif) */
-export const OPTIONAL_CATEGORIES: ConsentCategory[] = [
-  'analytics',
-  'advertising',
-  'functional',
-];
+export const OPTIONAL_CATEGORIES: ConsentCategory[] = ['analytics', 'advertising', 'functional'];
 
 /**
  * Crée un état de consentement par défaut.
@@ -52,10 +48,8 @@ export function createAcceptAllConsent(): ConsentState {
  * Détermine l'action à partir de l'état de consentement.
  */
 export function resolveAction(state: ConsentState): ConsentAction {
-  const allAccepted =
-    state.analytics && state.advertising && state.functional;
-  const allRefused =
-    !state.analytics && !state.advertising && !state.functional;
+  const allAccepted = state.analytics && state.advertising && state.functional;
+  const allRefused = !state.analytics && !state.advertising && !state.functional;
 
   if (allAccepted) return 'accept_all';
   if (allRefused) return 'refuse_all';
@@ -65,10 +59,7 @@ export function resolveAction(state: ConsentState): ConsentAction {
 /**
  * Calcule la date d'expiration à partir d'une date de consentement.
  */
-export function getExpiryDate(
-  consentDate: Date,
-  months: number = DEFAULT_EXPIRY_MONTHS
-): Date {
+export function getExpiryDate(consentDate: Date, months: number = DEFAULT_EXPIRY_MONTHS): Date {
   const expiry = new Date(consentDate.getTime());
   expiry.setMonth(expiry.getMonth() + months);
   return expiry;
@@ -95,9 +86,7 @@ export function validateConsentState(obj: unknown): obj is ConsentState {
  * Parse les données du cookie first-party.
  * Retourne null si le cookie est absent, invalide ou expiré.
  */
-export function parseConsentFromCookie(
-  raw: string | null | undefined
-): ConsentState | null {
+export function parseConsentFromCookie(raw: string | null | undefined): ConsentState | null {
   if (!raw) return null;
 
   try {
@@ -125,7 +114,7 @@ export function parseConsentFromCookie(
 export function serializeConsent(
   state: ConsentState,
   consentDate: Date = new Date(),
-  expiryMonths: number = DEFAULT_EXPIRY_MONTHS
+  expiryMonths: number = DEFAULT_EXPIRY_MONTHS,
 ): string {
   const cookieData: ConsentCookieData = {
     v: COOKIE_DATA_VERSION,
