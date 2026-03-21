@@ -1,0 +1,178 @@
+name: CI — @isomorph/cookie-consent
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Job 1 — Qualité (lint + typecheck + prettier)
+  # ──────────────────────────────────────────────
+  quality:
+    name: Quality (lint + tsc + prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: TypeScript check
+        run: npm run typecheck --workspace=packages/react
+
+      - name: Lint + Prettier
+        run: npm run lint --workspace=packages/react
+
+  # ──────────────────────────────────────────────
+  # Job 2 — Tests unitaires (Vitest, coverage ≥ 90%)
+  # ──────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests (Vitest)
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test --workspace=packages/react
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: packages/react/coverage/
+
+  # ──────────────────────────────────────────────
+  # Job 3 — Tests intégration (Vitest + MSW)
+  # ──────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests (Vitest + MSW)
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run integration tests
+        run: npx vitest run --config packages/react/vitest.integration.config.ts
+
+  # ──────────────────────────────────────────────
+  # Job 4 — Build (tsup)
+  # ──────────────────────────────────────────────
+  build:
+    name: Build (tsup)
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: packages/react/dist/
+
+  # ──────────────────────────────────────────────
+  # Job 5 — E2E (Playwright) — uniquement sur develop
+  # ──────────────────────────────────────────────
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npm run test:e2e --workspace=packages/react
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: packages/react/playwright-report/
+
+  # ──────────────────────────────────────────────
+  # Job 6 — Publish (npm) — uniquement sur tag semver
+  # ──────────────────────────────────────────────
+  publish:
+    name: Publish (npm)
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          registry-url: https://npm.pkg.github.com/
+          scope: '@isomorph'
+
+      - run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Publish @isomorph/cookie-consent
+        run: npm publish --workspace=packages/react
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish @isomorph/strapi-plugin-cookie-consent
+        run: npm publish --workspace=packages/strapi-v5
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish @isomorph/strapi-plugin-cookie-consent-v4
+        run: npm publish --workspace=packages/strapi-v4
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

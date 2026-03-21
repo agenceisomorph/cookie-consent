@@ -1,0 +1,50 @@
+{
+  "name": "strapi-plugin-cookie-consent",
+  "version": "1.0.0",
+  "description": "GDPR cookie consent logging for Strapi v5 — Google Consent Mode V2, CNIL-compliant, IP anonymization, auto-configured public POST endpoint",
+  "strapi": {
+    "name": "cookie-consent",
+    "displayName": "Cookie Consent — GDPR / GCM V2",
+    "description": "Log cookie consent choices with Google Consent Mode V2 support. CNIL-compliant, IP anonymized, rate-limited. Auto-configures public POST endpoint on bootstrap.",
+    "kind": "plugin",
+    "required": false
+  },
+  "main": "./server/index.js",
+  "scripts": {
+    "lint": "echo 'No lint configured'",
+    "test": "echo 'Tests in root workspace'"
+  },
+  "dependencies": {
+    "@isomorph/cookie-consent-shared": "*"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0"
+  },
+  "keywords": [
+    "strapi",
+    "strapi-plugin",
+    "cookie-consent",
+    "gdpr",
+    "rgpd",
+    "cnil",
+    "google-consent-mode",
+    "gcm-v2",
+    "privacy",
+    "consent-management"
+  ],
+  "homepage": "https://github.com/agenceisomorph/cookie-consent#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agenceisomorph/cookie-consent.git",
+    "directory": "packages/strapi-v5"
+  },
+  "bugs": {
+    "url": "https://github.com/agenceisomorph/cookie-consent/issues"
+  },
+  "author": "ISOMORPH <support@isomorph.fr> (https://isomorph.fr)",
+  "contributors": [],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "name": "@isomorph/cookie-consent",
+  "version": "1.0.0",
+  "description": "GDPR cookie consent banner for React / Next.js — Google Consent Mode V2, CNIL-compliant, WCAG 2.1 AA accessible",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "lint": "tsc --noEmit && prettier --check src/",
+    "lint:fix": "prettier --write src/",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@isomorph/cookie-consent-shared": "*"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "jsdom": "^25.0.0",
+    "msw": "^2.7.0",
+    "prettier": "^3.4.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "cookie-consent",
+    "gdpr",
+    "rgpd",
+    "cnil",
+    "google-consent-mode",
+    "gcm-v2",
+    "react",
+    "nextjs",
+    "privacy",
+    "consent-management",
+    "wcag",
+    "accessibility",
+    "strapi"
+  ],
+  "homepage": "https://github.com/agenceisomorph/cookie-consent#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agenceisomorph/cookie-consent.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/agenceisomorph/cookie-consent/issues"
+  },
+  "author": "ISOMORPH <support@isomorph.fr> (https://isomorph.fr)",
+  "contributors": [],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

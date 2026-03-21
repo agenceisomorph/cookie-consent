@@ -1,0 +1,34 @@
+# Source files
+src/
+tests/
+__tests__/
+
+# Config files
+.github/
+.vscode/
+.idea/
+_docs/
+
+# Dev files
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+playwright.config.ts
+.prettierrc
+.eslintrc*
+
+# Project files
+CLAUDE.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+CHANGELOG.md
+
+# Misc
+*.test.ts
+*.spec.ts
+*.test.tsx
+*.spec.tsx
+.env*
+.DS_Store
+node_modules/
+coverage/

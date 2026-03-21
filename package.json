@@ -1,0 +1,32 @@
+{
+  "name": "cookie-consent-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GDPR cookie consent — React components + Strapi v4/v5 plugins — Google Consent Mode V2",
+  "workspaces": [
+    "shared",
+    "packages/react",
+    "packages/strapi-v4",
+    "packages/strapi-v5"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace=packages/react",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "homepage": "https://github.com/agenceisomorph/cookie-consent#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agenceisomorph/cookie-consent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agenceisomorph/cookie-consent/issues"
+  },
+  "author": "ISOMORPH <support@isomorph.fr> (https://isomorph.fr)",
+  "license": "MIT"
+}

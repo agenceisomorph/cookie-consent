@@ -1,0 +1,97 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cookie_consents",
+  "info": {
+    "singularName": "cookie-consent",
+    "pluralName": "cookie-consents",
+    "displayName": "Cookie Consent",
+    "description": "Registre des consentements cookies RGPD — Google Consent Mode V2"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "sessionId": {
+      "type": "string",
+      "required": true,
+      "maxLength": 64,
+      "configurable": false
+    },
+    "necessary": {
+      "type": "boolean",
+      "required": true,
+      "default": true,
+      "configurable": false
+    },
+    "analytics": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "configurable": false
+    },
+    "advertising": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "configurable": false
+    },
+    "functional": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "configurable": false
+    },
+    "gcmVersion": {
+      "type": "string",
+      "required": true,
+      "default": "v2",
+      "maxLength": 10,
+      "configurable": false
+    },
+    "consentDate": {
+      "type": "datetime",
+      "required": true,
+      "configurable": false
+    },
+    "expiryDate": {
+      "type": "datetime",
+      "required": true,
+      "configurable": false
+    },
+    "userAgent": {
+      "type": "text",
+      "required": false,
+      "configurable": false
+    },
+    "ipAnonymized": {
+      "type": "string",
+      "required": false,
+      "maxLength": 20,
+      "configurable": false
+    },
+    "source": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "configurable": false
+    },
+    "action": {
+      "type": "enumeration",
+      "enum": [
+        "accept_all",
+        "refuse_all",
+        "custom"
+      ],
+      "required": true,
+      "configurable": false
+    }
+  }
+}

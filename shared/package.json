@@ -1,0 +1,26 @@
+{
+  "name": "@isomorph/cookie-consent-shared",
+  "version": "1.0.0",
+  "description": "Shared schema, validation and constants for @isomorph/cookie-consent",
+  "main": "./index.js",
+  "files": [
+    "*.js",
+    "*.json"
+  ],
+  "keywords": [
+    "cookie-consent",
+    "gdpr",
+    "strapi",
+    "shared"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agenceisomorph/cookie-consent.git",
+    "directory": "shared"
+  },
+  "author": "ISOMORPH <support@isomorph.fr> (https://isomorph.fr)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
