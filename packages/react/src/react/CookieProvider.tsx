@@ -15,20 +15,9 @@
 
 'use client';
 
-import {
-  createContext,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  type ReactNode,
-} from 'react';
+import { createContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 
-import type {
-  ConsentState,
-  ConsentCategory,
-  CookieConsentConfig,
-} from '../types/consent.types';
+import type { ConsentState, ConsentCategory, CookieConsentConfig } from '../types/consent.types';
 
 import {
   createDefaultConsent,
@@ -66,7 +55,7 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
 
   const adapter = useMemo(
     () => createStrapiAdapter({ apiUrl: config.strapiUrl }),
-    [config.strapiUrl]
+    [config.strapiUrl],
   );
 
   // ─── Init : lire le cookie existant au mount ────────────────────
@@ -105,10 +94,7 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
         ...state,
         gcmVersion: 'v2',
         consentDate: now.toISOString(),
-        expiryDate: getExpiryDate(
-          now,
-          config.expiryMonths ?? DEFAULT_EXPIRY_MONTHS
-        ).toISOString(),
+        expiryDate: getExpiryDate(now, config.expiryMonths ?? DEFAULT_EXPIRY_MONTHS).toISOString(),
         source: config.siteDomain,
         action: resolveAction(state),
       });
@@ -122,7 +108,7 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
       // Callback utilisateur
       config.onConsentChange?.(state);
     },
-    [adapter, config]
+    [adapter, config],
   );
 
   // ─── Actions ────────────────────────────────────────────────────
@@ -143,23 +129,20 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
       // Ne pas persister ici — attendre saveCustom
       setConsent(updated);
     },
-    [consent]
+    [consent],
   );
 
   const saveCustom = useCallback(
     (state: ConsentState) => {
       persistConsent({ ...state, necessary: true });
     },
-    [persistConsent]
+    [persistConsent],
   );
 
-  const openPreferences = useCallback(
-    (category?: ConsentCategory) => {
-      setFocusCategory(category ?? null);
-      setShowPreferencesModal(true);
-    },
-    []
-  );
+  const openPreferences = useCallback((category?: ConsentCategory) => {
+    setFocusCategory(category ?? null);
+    setShowPreferencesModal(true);
+  }, []);
 
   const closePreferences = useCallback(() => {
     setShowPreferencesModal(false);
@@ -171,7 +154,7 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
       if (!consent) return category === 'necessary';
       return consent[category] === true;
     },
-    [consent]
+    [consent],
   );
 
   // ─── Value ──────────────────────────────────────────────────────
@@ -202,15 +185,11 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
       closePreferences,
       isGranted,
       focusCategory,
-    ]
+    ],
   );
 
   // Ne rien rendre avant l'initialisation (évite le flash du bandeau)
   if (!initialized) return null;
 
-  return (
-    <ConsentContext.Provider value={value}>
-      {children}
-    </ConsentContext.Provider>
-  );
+  return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;
 }

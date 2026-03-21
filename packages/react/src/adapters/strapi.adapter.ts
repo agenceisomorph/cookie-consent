@@ -39,9 +39,7 @@ export function createStrapiAdapter(config: StrapiAdapterConfig): ConsentAdapter
 
         if (!response.ok) {
           // Log silencieux — fire & forget, on ne bloque pas l'UX
-          console.warn(
-            `[cookie-consent] Erreur Strapi ${response.status}: ${response.statusText}`
-          );
+          console.warn(`[cookie-consent] Erreur Strapi ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
         // Erreur réseau ou timeout — silencieux
