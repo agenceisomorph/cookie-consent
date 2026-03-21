@@ -22,9 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
-      - run: npm ci
+      - run: npm install
 
       - name: TypeScript check
         run: npm run typecheck --workspace=packages/react
@@ -45,9 +44,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
-      - run: npm ci
+      - run: npm install
 
       - name: Run unit tests with coverage
         run: npm run test --workspace=packages/react
@@ -72,9 +70,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
-      - run: npm ci
+      - run: npm install
 
       - name: Run integration tests
         run: npx vitest run --config packages/react/vitest.integration.config.ts
@@ -92,9 +89,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
-      - run: npm ci
+      - run: npm install
 
       - name: Build packages
         run: npm run build
@@ -119,9 +115,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
-      - run: npm ci
+      - run: npm install
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -153,11 +148,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          registry-url: https://npm.pkg.github.com/
-          scope: '@isomorph'
+          registry-url: https://registry.npmjs.org/
+          scope: '@isomorph-agency'
 
-      - run: npm ci
+      - run: npm install
 
       - name: Build all packages
         run: npm run build
