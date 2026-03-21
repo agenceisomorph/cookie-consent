@@ -61,9 +61,7 @@ describe('StrapiAdapter — intégration', () => {
   });
 
   it('gère les erreurs serveur sans bloquer', async () => {
-    fetchMock.mockResolvedValueOnce(
-      new Response('Internal Server Error', { status: 500 }),
-    );
+    fetchMock.mockResolvedValueOnce(new Response('Internal Server Error', { status: 500 }));
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createStrapiAdapter({
