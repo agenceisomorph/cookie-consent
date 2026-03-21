@@ -39,7 +39,7 @@ import {
   DEFAULT_EXPIRY_MONTHS,
 } from '../core/consent';
 
-import { readConsent, writeConsent, COOKIE_NAME } from '../core/storage';
+import { readConsent, writeConsent } from '../core/storage';
 import { updateConsent as updateGcmConsent } from '../core/gcm';
 import { createStrapiAdapter } from '../adapters/strapi.adapter';
 import type { UseConsentReturn } from './useConsent';

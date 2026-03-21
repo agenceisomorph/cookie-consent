@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   GCM_SIGNAL_MAP,
   ALL_GCM_SIGNALS,
@@ -10,14 +10,13 @@ import {
   getInlineConsentScript,
 } from './gcm';
 import type { ConsentState } from '../types/consent.types';
-import type { GcmConsentState } from '../types/gcm.types';
 
 // ─── Setup ───────────────────────────────────────────────────────
 
 beforeEach(() => {
   // Reset window.dataLayer et window.gtag
-  delete (window as Record<string, unknown>).dataLayer;
-  delete (window as Record<string, unknown>).gtag;
+  delete (window as unknown as Record<string, unknown>).dataLayer;
+  delete (window as unknown as Record<string, unknown>).gtag;
 });
 
 // ─── GCM_SIGNAL_MAP ──────────────────────────────────────────────

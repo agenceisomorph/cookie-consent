@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   COOKIE_NAME,
   readConsent,
@@ -6,8 +6,8 @@ import {
   clearConsent,
   hasValidConsent,
 } from './storage';
-import { serializeConsent, COOKIE_DATA_VERSION } from './consent';
-import type { ConsentState, ConsentCookieData } from '../types/consent.types';
+import { serializeConsent } from './consent';
+import type { ConsentState } from '../types/consent.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────
 

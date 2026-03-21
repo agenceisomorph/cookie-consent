@@ -19,12 +19,13 @@ const mockRecord: ConsentRecord = {
 
 // ─── Setup ───────────────────────────────────────────────────────
 
-let fetchSpy: ReturnType<typeof vi.spyOn>;
+let fetchMock: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
-  fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+  fetchMock = vi.fn().mockResolvedValue(
     new Response(JSON.stringify({ id: 1, status: 'ok' }), { status: 201 })
   );
+  globalThis.fetch = fetchMock;
 });
 
 afterEach(() => {
@@ -47,8 +48,8 @@ describe('save', () => {
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com' });
     await adapter.save(mockRecord);
 
-    expect(fetchSpy).toHaveBeenCalledOnce();
-    const [url, options] = fetchSpy.mock.calls[0]!;
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const [url, options] = fetchMock.mock.calls[0]!;
     expect(url).toBe('https://api.example.com/cookie-consents');
     expect(options?.method).toBe('POST');
   });
@@ -57,7 +58,7 @@ describe('save', () => {
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com' });
     await adapter.save(mockRecord);
 
-    const body = JSON.parse(fetchSpy.mock.calls[0]![1]?.body as string);
+    const body = JSON.parse(fetchMock.mock.calls[0]![1]?.body as string);
     expect(body).toEqual({ data: mockRecord });
   });
 
@@ -65,7 +66,7 @@ describe('save', () => {
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com' });
     await adapter.save(mockRecord);
 
-    const headers = fetchSpy.mock.calls[0]![1]?.headers as Record<string, string>;
+    const headers = fetchMock.mock.calls[0]![1]?.headers as Record<string, string>;
     expect(headers['Content-Type']).toBe('application/json');
   });
 
@@ -73,12 +74,12 @@ describe('save', () => {
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com/api/' });
     await adapter.save(mockRecord);
 
-    const [url] = fetchSpy.mock.calls[0]!;
+    const [url] = fetchMock.mock.calls[0]!;
     expect(url).toBe('https://api.example.com/api/cookie-consents');
   });
 
   it('ne lève pas d\'erreur si le serveur retourne une erreur', async () => {
-    fetchSpy.mockResolvedValueOnce(
+    fetchMock.mockResolvedValueOnce(
       new Response('Internal Server Error', { status: 500 })
     );
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -91,7 +92,7 @@ describe('save', () => {
   });
 
   it('ne lève pas d\'erreur sur erreur réseau', async () => {
-    fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com' });
@@ -103,7 +104,7 @@ describe('save', () => {
 
   it('ne lève pas d\'erreur sur timeout (AbortError)', async () => {
     const abortError = new DOMException('The operation was aborted.', 'AbortError');
-    fetchSpy.mockRejectedValueOnce(abortError);
+    fetchMock.mockRejectedValueOnce(abortError);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createStrapiAdapter({ apiUrl: 'https://api.example.com', timeout: 100 });
@@ -123,7 +124,7 @@ describe('save', () => {
     await adapter.save(mockRecord);
 
     // Vérifier que signal est passé à fetch
-    const options = fetchSpy.mock.calls[0]![1];
+    const options = fetchMock.mock.calls[0]![1];
     expect(options?.signal).toBeInstanceOf(AbortSignal);
   });
 });
