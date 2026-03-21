@@ -1,11 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  COOKIE_NAME,
-  readConsent,
-  writeConsent,
-  clearConsent,
-  hasValidConsent,
-} from './storage';
+import { COOKIE_NAME, readConsent, writeConsent, clearConsent, hasValidConsent } from './storage';
 import { serializeConsent } from './consent';
 import type { ConsentState } from '../types/consent.types';
 
@@ -47,7 +41,7 @@ describe('readConsent', () => {
     expect(readConsent()).toBeNull();
   });
 
-  it('retourne null si le cookie n\'existe pas parmi d\'autres', () => {
+  it("retourne null si le cookie n'existe pas parmi d'autres", () => {
     Object.defineProperty(document, 'cookie', {
       writable: true,
       value: 'other_cookie=value; another=123',

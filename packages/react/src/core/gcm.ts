@@ -37,7 +37,7 @@ export const ALL_GCM_SIGNALS: GcmSignal[] = [
  */
 export function mapCategoryToSignals(
   category: ConsentCategory,
-  granted: boolean
+  granted: boolean,
 ): Partial<GcmConsentState> {
   const signals = GCM_SIGNAL_MAP[category];
   if (!signals) return {};

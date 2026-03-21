@@ -47,25 +47,25 @@ describe('createAcceptAllConsent', () => {
 describe('resolveAction', () => {
   it('retourne accept_all si toutes les catégories optionnelles sont true', () => {
     expect(
-      resolveAction({ necessary: true, analytics: true, advertising: true, functional: true })
+      resolveAction({ necessary: true, analytics: true, advertising: true, functional: true }),
     ).toBe('accept_all');
   });
 
   it('retourne refuse_all si toutes les catégories optionnelles sont false', () => {
     expect(
-      resolveAction({ necessary: true, analytics: false, advertising: false, functional: false })
+      resolveAction({ necessary: true, analytics: false, advertising: false, functional: false }),
     ).toBe('refuse_all');
   });
 
   it('retourne custom si mix de true/false', () => {
     expect(
-      resolveAction({ necessary: true, analytics: true, advertising: false, functional: false })
+      resolveAction({ necessary: true, analytics: true, advertising: false, functional: false }),
     ).toBe('custom');
   });
 
   it('retourne custom si seulement functional est true', () => {
     expect(
-      resolveAction({ necessary: true, analytics: false, advertising: false, functional: true })
+      resolveAction({ necessary: true, analytics: false, advertising: false, functional: true }),
     ).toBe('custom');
   });
 });
@@ -87,7 +87,7 @@ describe('getExpiryDate', () => {
     expect(expiry.getMonth()).toBe(8); // septembre
   });
 
-  it('gère le dépassement de fin d\'année', () => {
+  it("gère le dépassement de fin d'année", () => {
     const base = new Date('2026-11-01T00:00:00.000Z');
     const expiry = getExpiryDate(base, 3);
     expect(expiry.getFullYear()).toBe(2027);
@@ -107,7 +107,12 @@ describe('getExpiryDate', () => {
 describe('validateConsentState', () => {
   it('valide un état correct', () => {
     expect(
-      validateConsentState({ necessary: true, analytics: true, advertising: false, functional: true })
+      validateConsentState({
+        necessary: true,
+        analytics: true,
+        advertising: false,
+        functional: true,
+      }),
     ).toBe(true);
   });
 
@@ -123,28 +128,38 @@ describe('validateConsentState', () => {
     expect(validateConsentState('hello')).toBe(false);
   });
 
-  it('rejette si necessary n\'est pas true', () => {
+  it("rejette si necessary n'est pas true", () => {
     expect(
-      validateConsentState({ necessary: false, analytics: true, advertising: true, functional: true })
+      validateConsentState({
+        necessary: false,
+        analytics: true,
+        advertising: true,
+        functional: true,
+      }),
     ).toBe(false);
   });
 
-  it('rejette si analytics n\'est pas un boolean', () => {
+  it("rejette si analytics n'est pas un boolean", () => {
     expect(
-      validateConsentState({ necessary: true, analytics: 'yes', advertising: true, functional: true })
+      validateConsentState({
+        necessary: true,
+        analytics: 'yes',
+        advertising: true,
+        functional: true,
+      }),
     ).toBe(false);
   });
 
   it('rejette un objet incomplet (missing advertising)', () => {
-    expect(
-      validateConsentState({ necessary: true, analytics: true, functional: true })
-    ).toBe(false);
+    expect(validateConsentState({ necessary: true, analytics: true, functional: true })).toBe(
+      false,
+    );
   });
 
   it('rejette un objet incomplet (missing functional)', () => {
-    expect(
-      validateConsentState({ necessary: true, analytics: true, advertising: true })
-    ).toBe(false);
+    expect(validateConsentState({ necessary: true, analytics: true, advertising: true })).toBe(
+      false,
+    );
   });
 });
 
@@ -199,7 +214,7 @@ describe('parseConsentFromCookie', () => {
     expect(parseConsentFromCookie(expired)).toBeNull();
   });
 
-  it('retourne null si date d\'expiration invalide', () => {
+  it("retourne null si date d'expiration invalide", () => {
     expect(parseConsentFromCookie(makeCookie({ exp: 'not-a-date' }))).toBeNull();
   });
 
@@ -215,7 +230,7 @@ describe('parseConsentFromCookie', () => {
 // ─── serializeConsent ────────────────────────────────────────────
 
 describe('serializeConsent', () => {
-  it('produit un string encodé contenant l\'état', () => {
+  it("produit un string encodé contenant l'état", () => {
     const state: ConsentState = {
       necessary: true,
       analytics: true,
@@ -231,7 +246,7 @@ describe('serializeConsent', () => {
     expect(decoded.ts).toBeDefined();
   });
 
-  it('round-trip : serialize → parse retourne l\'état original', () => {
+  it("round-trip : serialize → parse retourne l'état original", () => {
     const state: ConsentState = {
       necessary: true,
       analytics: false,
@@ -243,7 +258,7 @@ describe('serializeConsent', () => {
     expect(parsed).toEqual(state);
   });
 
-  it('utilise l\'expiry en mois passé en paramètre', () => {
+  it("utilise l'expiry en mois passé en paramètre", () => {
     const state: ConsentState = {
       necessary: true,
       analytics: false,

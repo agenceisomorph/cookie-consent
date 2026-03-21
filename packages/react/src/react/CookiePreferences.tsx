@@ -40,7 +40,7 @@ const DEFAULT_CATEGORIES: CategoryConfig[] = [
   {
     key: 'analytics',
     label: 'Analytique',
-    description: 'Mesure d\'audience (Google Analytics). Données anonymisées.',
+    description: "Mesure d'audience (Google Analytics). Données anonymisées.",
   },
   {
     key: 'advertising',
@@ -61,18 +61,10 @@ export function CookiePreferences({
   title = 'Gérer mes préférences cookies',
   className = '',
 }: CookiePreferencesProps) {
-  const {
-    consent,
-    showPreferencesModal,
-    closePreferences,
-    saveCustom,
-    refuseAll,
-    focusCategory,
-  } = useConsent();
+  const { consent, showPreferencesModal, closePreferences, saveCustom, refuseAll, focusCategory } =
+    useConsent();
 
-  const [localState, setLocalState] = useState<ConsentState>(
-    consent ?? createDefaultConsent()
-  );
+  const [localState, setLocalState] = useState<ConsentState>(consent ?? createDefaultConsent());
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -94,9 +86,7 @@ export function CookiePreferences({
   // Scroll + focus vers la catégorie ciblée (ouverture depuis une façade)
   useEffect(() => {
     if (showPreferencesModal && focusCategory && modalRef.current) {
-      const el = modalRef.current.querySelector(
-        `[data-category="${focusCategory}"]`
-      );
+      const el = modalRef.current.querySelector(`[data-category="${focusCategory}"]`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const toggle = el.querySelector('button[role="switch"]');
@@ -119,7 +109,7 @@ export function CookiePreferences({
 
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [tabindex]:not([tabindex="-1"])'
+          'button, [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length === 0) return;
 
@@ -182,9 +172,7 @@ export function CookiePreferences({
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
-          <h2 className="m-0 text-lg font-semibold text-gray-900">
-            {title}
-          </h2>
+          <h2 className="m-0 text-lg font-semibold text-gray-900">{title}</h2>
           <button
             ref={closeRef}
             type="button"
@@ -206,9 +194,7 @@ export function CookiePreferences({
             >
               <div className="flex-1 pr-4">
                 <strong className="text-gray-900">{cat.label}</strong>
-                <p className="mt-1 text-[0.8125rem] text-gray-500">
-                  {cat.description}
-                </p>
+                <p className="mt-1 text-[0.8125rem] text-gray-500">{cat.description}</p>
               </div>
 
               {cat.locked ? (
@@ -216,7 +202,8 @@ export function CookiePreferences({
                   className="self-center whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold"
                   style={{
                     color: 'var(--cc-primary, #2563eb)',
-                    backgroundColor: 'color-mix(in srgb, var(--cc-primary, #2563eb) 10%, transparent)',
+                    backgroundColor:
+                      'color-mix(in srgb, var(--cc-primary, #2563eb) 10%, transparent)',
                   }}
                   aria-label={`${cat.label} : toujours actif`}
                 >

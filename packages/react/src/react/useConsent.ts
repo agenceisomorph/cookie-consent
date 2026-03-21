@@ -43,7 +43,7 @@ export function useConsent(): UseConsentReturn {
 
   if (!context) {
     throw new Error(
-      '[cookie-consent] useConsent doit être utilisé à l\'intérieur de <CookieProvider>.'
+      "[cookie-consent] useConsent doit être utilisé à l'intérieur de <CookieProvider>.",
     );
   }
 
