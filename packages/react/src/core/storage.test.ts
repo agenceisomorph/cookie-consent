@@ -98,7 +98,7 @@ describe('writeConsent', () => {
     writeConsent(validState);
 
     expect(cookieSpy).toHaveBeenCalled();
-    const writtenValue = cookieSpy.mock.calls[0][0];
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
     expect(writtenValue).toContain('Secure');
     expect(writtenValue).toContain('SameSite=Lax');
     expect(writtenValue).toContain('path=/');
@@ -112,7 +112,7 @@ describe('writeConsent', () => {
     writeConsent(validState, { domain: '.otrepaca.fr' });
 
     expect(cookieSpy).toHaveBeenCalled();
-    const writtenValue = cookieSpy.mock.calls[0][0];
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
     expect(writtenValue).toContain('domain=.otrepaca.fr');
 
     cookieSpy.mockRestore();
@@ -128,7 +128,7 @@ describe('clearConsent', () => {
     clearConsent();
 
     expect(cookieSpy).toHaveBeenCalled();
-    const writtenValue = cookieSpy.mock.calls[0][0];
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
     expect(writtenValue).toContain(COOKIE_NAME);
     expect(writtenValue).toContain('Thu, 01 Jan 1970');
 
@@ -141,7 +141,7 @@ describe('clearConsent', () => {
     clearConsent({ domain: '.example.com' });
 
     expect(cookieSpy).toHaveBeenCalled();
-    const writtenValue = cookieSpy.mock.calls[0][0];
+    const writtenValue = cookieSpy.mock.calls[0]![0] as string;
     expect(writtenValue).toContain('domain=.example.com');
 
     cookieSpy.mockRestore();

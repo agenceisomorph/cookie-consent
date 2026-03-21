@@ -43,7 +43,9 @@ describe('StrapiAdapter — intégration', () => {
 
     expect(fetchMock).toHaveBeenCalledOnce();
 
-    const [url, options] = fetchMock.mock.calls[0]!;
+    const call = fetchMock.mock.calls[0]!;
+    const url = call[0] as string;
+    const options = call[1] as RequestInit;
     expect(url).toBe('https://admin.otrepaca.fr/api/cookie-consents');
     expect(options.method).toBe('POST');
 
