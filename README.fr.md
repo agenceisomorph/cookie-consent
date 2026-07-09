@@ -1,4 +1,4 @@
-# @isomorph/cookie-consent
+# @isomorph-agency/cookie-consent
 
 Bandeau cookies RGPD natif — Google Consent Mode V2, conforme CNIL, accessible RGAA 4.1.
 
@@ -12,9 +12,9 @@ Monorepo npm workspaces avec 3 packages :
 
 | Package | Description | Registre |
 |---------|-------------|----------|
-| `@isomorph/cookie-consent` | Core TypeScript + composants React | npm privé |
-| `@isomorph/strapi-plugin-cookie-consent` | Plugin Strapi v5 (Document Service API) | npm privé |
-| `@isomorph/strapi-plugin-cookie-consent-v4` | Plugin Strapi v4 (Entity Service API) | npm privé |
+| `@isomorph-agency/cookie-consent` | Core TypeScript + composants React | npm public |
+| `strapi-plugin-cookie-consent` | Plugin Strapi v5 (Document Service API) | npm public |
+| `strapi-plugin-cookie-consent-v4` | Plugin Strapi v4 (Entity Service API) | npm public |
 
 Un dossier `shared/` contient le schéma de collection, la validation et les constantes partagées entre les plugins Strapi et le package React.
 
@@ -25,13 +25,13 @@ Un dossier `shared/` contient le schéma de collection, la validation et les con
 ### 1. Package React (projet Next.js)
 
 ```bash
-npm install @isomorph/cookie-consent
+npm install @isomorph-agency/cookie-consent
 ```
 
 ### 2. Plugin Strapi v5
 
 ```bash
-npm install @isomorph/strapi-plugin-cookie-consent
+npm install strapi-plugin-cookie-consent
 ```
 
 Ajouter dans `config/plugins.ts` :
@@ -49,7 +49,7 @@ Relancer Strapi — le plugin crée automatiquement la collection `cookie-consen
 ### 3. Plugin Strapi v4 (projets legacy)
 
 ```bash
-npm install @isomorph/strapi-plugin-cookie-consent-v4
+npm install strapi-plugin-cookie-consent-v4
 ```
 
 Ajouter dans `config/plugins.js` :
@@ -75,7 +75,7 @@ Ce script DOIT se charger avant GTM/GA4. Il initialise tous les signaux GCM V2 �
 ```tsx
 // src/app/layout.tsx
 import Script from 'next/script';
-import { getInlineConsentScript } from '@isomorph/cookie-consent';
+import { getInlineConsentScript } from '@isomorph-agency/cookie-consent';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -118,7 +118,7 @@ import {
   CookieProvider,
   CookieBanner,
   CookiePreferences,
-} from '@isomorph/cookie-consent/react';
+} from '@isomorph-agency/cookie-consent/react';
 
 export function CookieConsentWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -144,7 +144,7 @@ export function CookieConsentWrapper({ children }: { children: React.ReactNode }
 // src/components/Footer.tsx
 'use client';
 
-import { useConsent } from '@isomorph/cookie-consent/react';
+import { useConsent } from '@isomorph-agency/cookie-consent/react';
 
 export function Footer() {
   const { openPreferences } = useConsent();
@@ -169,7 +169,7 @@ Chaque composant dynamique qui dépend d'une catégorie de cookies affiche une f
 ### YouTube
 
 ```tsx
-import { YoutubeEmbed } from '@isomorph/cookie-consent/react';
+import { YoutubeEmbed } from '@isomorph-agency/cookie-consent/react';
 
 <YoutubeEmbed
   videoId="dQw4w9WgXcQ"
@@ -182,7 +182,7 @@ Si les cookies fonctionnels ne sont pas acceptés, le composant affiche un messa
 ### Google Maps
 
 ```tsx
-import { GoogleMap } from '@isomorph/cookie-consent/react';
+import { GoogleMap } from '@isomorph-agency/cookie-consent/react';
 
 <GoogleMap
   mapComponent={<MaCarteGoogleMaps />}
@@ -193,7 +193,7 @@ import { GoogleMap } from '@isomorph/cookie-consent/react';
 ### Contenu bloqué générique
 
 ```tsx
-import { BlockedContent } from '@isomorph/cookie-consent/react';
+import { BlockedContent } from '@isomorph-agency/cookie-consent/react';
 
 <BlockedContent
   category="analytics"

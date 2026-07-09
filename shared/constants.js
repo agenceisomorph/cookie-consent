@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Constantes partagées — @isomorph/cookie-consent
+ * Constantes partagées — @isomorph-agency/cookie-consent
  * Utilisées par les plugins Strapi v4/v5 et le package React.
  */
 

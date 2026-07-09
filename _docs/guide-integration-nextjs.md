@@ -1,4 +1,4 @@
-# Guide d'intégration — @isomorph/cookie-consent + Next.js App Router
+# Guide d'intégration — @isomorph-agency/cookie-consent + Next.js App Router
 
 > Guide pas à pas pour intégrer le bandeau cookies ISOMORPH dans un projet Next.js App Router.
 > Destiné aux développeurs ISOMORPH (agent FORGE).
@@ -9,7 +9,7 @@
 
 - Next.js 14+ (App Router)
 - React 18+
-- Instance Strapi avec le plugin `@isomorph/strapi-plugin-cookie-consent` (v5) ou `@isomorph/strapi-plugin-cookie-consent-v4` (v4)
+- Instance Strapi avec le plugin `strapi-plugin-cookie-consent` (v5) ou `strapi-plugin-cookie-consent-v4` (v4)
 - Google Tag Manager ou GA4 configuré
 
 ---
@@ -17,12 +17,12 @@
 ## 1. Installation
 
 ```bash
-npm install @isomorph/cookie-consent
+npm install @isomorph-agency/cookie-consent
 ```
 
 Le package expose 2 points d'entrée :
-- `@isomorph/cookie-consent` : core (types, consent, storage, gcm, adapters)
-- `@isomorph/cookie-consent/react` : composants React (CookieProvider, CookieBanner, CookiePreferences, useConsent, facades)
+- `@isomorph-agency/cookie-consent` : core (types, consent, storage, gcm, adapters)
+- `@isomorph-agency/cookie-consent/react` : composants React (CookieProvider, CookieBanner, CookiePreferences, useConsent, facades)
 
 ---
 
@@ -53,7 +53,7 @@ L'ordre des scripts dans le `<head>` est critique pour la conformité GCM V2. Le
 // src/app/layout.tsx
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { getInlineConsentScript } from '@isomorph/cookie-consent';
+import { getInlineConsentScript } from '@isomorph-agency/cookie-consent';
 import { CookieConsentWrapper } from '@/components/CookieConsentWrapper';
 
 export const metadata: Metadata = {
@@ -117,7 +117,7 @@ import {
   CookieProvider,
   CookieBanner,
   CookiePreferences,
-} from '@isomorph/cookie-consent/react';
+} from '@isomorph-agency/cookie-consent/react';
 
 interface Props {
   children: React.ReactNode;
@@ -157,7 +157,7 @@ Obligation CNIL : l'utilisateur doit pouvoir modifier ses préférences à tout 
 // src/components/Footer.tsx
 'use client';
 
-import { useConsent } from '@isomorph/cookie-consent/react';
+import { useConsent } from '@isomorph-agency/cookie-consent/react';
 
 export function Footer() {
   const { openPreferences } = useConsent();
@@ -189,7 +189,7 @@ Chaque composant dynamique qui dépend d'une catégorie de cookies DOIT afficher
 ### YouTube
 
 ```tsx
-import { YoutubeEmbed } from '@isomorph/cookie-consent/react';
+import { YoutubeEmbed } from '@isomorph-agency/cookie-consent/react';
 
 // Remplace directement une iframe YouTube
 <YoutubeEmbed
@@ -201,7 +201,7 @@ import { YoutubeEmbed } from '@isomorph/cookie-consent/react';
 ### Google Maps
 
 ```tsx
-import { GoogleMap } from '@isomorph/cookie-consent/react';
+import { GoogleMap } from '@isomorph-agency/cookie-consent/react';
 
 // Wrapping du composant Maps existant
 <GoogleMap
@@ -215,7 +215,7 @@ import { GoogleMap } from '@isomorph/cookie-consent/react';
 Pour tout autre composant (Intercom, Crisp, widget custom...) :
 
 ```tsx
-import { BlockedContent } from '@isomorph/cookie-consent/react';
+import { BlockedContent } from '@isomorph-agency/cookie-consent/react';
 
 <BlockedContent category="functional" title="Chat en ligne">
   <IntercomWidget />
@@ -296,7 +296,7 @@ Le cookie expire automatiquement après 13 mois (obligation CNIL). L'utilisateur
 ### Mise à jour du package
 
 ```bash
-npm update @isomorph/cookie-consent
+npm update @isomorph-agency/cookie-consent
 ```
 
 Les mises à jour respectent le semver. Les breaking changes sont documentées dans le CHANGELOG.

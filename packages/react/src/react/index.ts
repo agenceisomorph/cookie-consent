@@ -1,4 +1,4 @@
-// @isomorph/cookie-consent/react — barrel export
+// @isomorph-agency/cookie-consent/react — barrel export
 export { CookieProvider } from './CookieProvider';
 export type { CookieProviderProps } from './CookieProvider';
 

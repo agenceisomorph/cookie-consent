@@ -1,6 +1,6 @@
 'use strict';
 
-const { validateConsentBody, anonymizeIp } = require('@isomorph/cookie-consent-shared/validation');
+const { validateConsentBody, anonymizeIp } = require('@isomorph-agency/cookie-consent-shared/validation');
 
 /**
  * Controller cookie-consent — Strapi v4 (Entity Service API)

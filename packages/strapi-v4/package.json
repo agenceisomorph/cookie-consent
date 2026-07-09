@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-cookie-consent-v4",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GDPR cookie consent logging for Strapi v4 — Google Consent Mode V2, CNIL-compliant, IP anonymization, auto-configured public POST endpoint",
   "strapi": {
     "name": "cookie-consent",
@@ -12,10 +12,11 @@
   "main": "./server/index.js",
   "scripts": {
     "lint": "echo 'No lint configured'",
-    "test": "echo 'Tests in root workspace'"
+    "test": "echo 'Tests in root workspace'",
+    "prepublishOnly": "node ../../_scripts/verify-tarball.mjs"
   },
   "dependencies": {
-    "@isomorph-agency/cookie-consent-shared": "*"
+    "@isomorph-agency/cookie-consent-shared": "^1.0.0"
   },
   "peerDependencies": {
     "@strapi/strapi": "^4.0.0"
