@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Plugin Strapi v4 — @isomorph/strapi-plugin-cookie-consent-v4
+ * Plugin Strapi v4 — strapi-plugin-cookie-consent-v4
  * Entry point (strapi-server pattern v4)
  */
 

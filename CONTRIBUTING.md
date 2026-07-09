@@ -1,4 +1,4 @@
-# Contributing to @isomorph/cookie-consent
+# Contributing to @isomorph-agency/cookie-consent
 
 Thank you for your interest in contributing! This project aims to provide a high-quality, GDPR-compliant cookie consent solution for the Strapi + Next.js ecosystem.
 
@@ -23,7 +23,7 @@ npm install
 ```
 cookie-consent/
 ├── packages/
-│   ├── react/          # @isomorph/cookie-consent — React components + core
+│   ├── react/          # @isomorph-agency/cookie-consent — React components + core
 │   ├── strapi-v5/      # strapi-plugin-cookie-consent — Strapi v5 plugin
 │   └── strapi-v4/      # strapi-plugin-cookie-consent-v4 — Strapi v4 plugin
 ├── shared/             # Shared schema, validation, constants

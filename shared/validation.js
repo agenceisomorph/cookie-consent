@@ -3,7 +3,7 @@
 const { ACTIONS, IP_OCTETS_KEPT, CONSENT_EXPIRY_MONTHS } = require('./constants');
 
 /**
- * Validation partagée — @isomorph/cookie-consent
+ * Validation partagée — @isomorph-agency/cookie-consent
  * Utilisée par les controllers Strapi v4 et v5.
  * Pas de dépendance externe (pas de Zod côté Strapi pour rester léger).
  */

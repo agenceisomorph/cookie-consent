@@ -1,6 +1,6 @@
 # Plan de déploiement test — OTRE PACA
 
-> Instructions pour le premier déploiement de `@isomorph/cookie-consent` sur le projet OTRE PACA.
+> Instructions pour le premier déploiement de `@isomorph-agency/cookie-consent` sur le projet OTRE PACA.
 > Ce document sert de checklist pour FORGE lors de l'intégration.
 
 ---
@@ -24,7 +24,7 @@
 cd /chemin/vers/otre-back
 
 # Installer le plugin
-npm install @isomorph/strapi-plugin-cookie-consent
+npm install strapi-plugin-cookie-consent
 
 # Activer le plugin dans config/plugins.ts
 # Ajouter : 'cookie-consent': { enabled: true }
@@ -75,7 +75,7 @@ git checkout -b fix/cookie-consent-integration
 ### Installation
 
 ```bash
-npm install @isomorph/cookie-consent
+npm install @isomorph-agency/cookie-consent
 ```
 
 ### Fichiers à modifier
@@ -86,7 +86,7 @@ Ajouter le script GCM V2 default en `beforeInteractive` et wrapper l'app avec `C
 
 ```jsx
 import Script from 'next/script';
-import { getInlineConsentScript } from '@isomorph/cookie-consent';
+import { getInlineConsentScript } from '@isomorph-agency/cookie-consent';
 import { CookieConsentWrapper } from '@/components/CookieConsentWrapper';
 
 // Dans le JSX, AVANT </head> :
@@ -113,7 +113,7 @@ import {
   CookieProvider,
   CookieBanner,
   CookiePreferences,
-} from '@isomorph/cookie-consent/react';
+} from '@isomorph-agency/cookie-consent/react';
 
 export function CookieConsentWrapper({ children }) {
   return (
@@ -136,7 +136,7 @@ export function CookieConsentWrapper({ children }) {
 Ajouter le lien "Gérer mes cookies" dans le footer existant :
 
 ```jsx
-import { useConsent } from '@isomorph/cookie-consent/react';
+import { useConsent } from '@isomorph-agency/cookie-consent/react';
 
 // Dans le composant :
 const { openPreferences } = useConsent();
@@ -174,7 +174,7 @@ Modifier les composants Google Maps et vidéo existants pour utiliser les façad
 
 ```bash
 git add -A
-git commit -m "feat: intégration @isomorph/cookie-consent RGPD GCM V2"
+git commit -m "feat: intégration @isomorph-agency/cookie-consent RGPD GCM V2"
 git push origin fix/cookie-consent-integration
 ```
 

@@ -1,7 +1,7 @@
 {
   "name": "@isomorph-agency/cookie-consent-shared",
   "version": "1.0.0",
-  "description": "Shared schema, validation and constants for @isomorph/cookie-consent",
+  "description": "Shared schema, validation and constants for @isomorph-agency/cookie-consent",
   "main": "./index.js",
   "files": [
     "*.js",

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Config Playwright — @isomorph/cookie-consent
+ * Config Playwright — @isomorph-agency/cookie-consent
  * Tests E2E sur l'app fixture locale (tests/e2e/fixture/).
  */
 export default defineConfig({

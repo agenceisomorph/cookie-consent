@@ -1,4 +1,4 @@
-// @isomorph/cookie-consent — core barrel export
+// @isomorph-agency/cookie-consent — core barrel export
 export {
   DEFAULT_EXPIRY_MONTHS,
   COOKIE_DATA_VERSION,

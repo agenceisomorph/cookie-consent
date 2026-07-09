@@ -1,4 +1,4 @@
-// @isomorph/cookie-consent — main entry point
+// @isomorph-agency/cookie-consent — main entry point
 
 // Core
 export * from './core';

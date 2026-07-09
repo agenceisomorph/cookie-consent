@@ -56,7 +56,7 @@ Le shared doit être publié en premier (c'est une dépendance des 3 autres) :
 cd shared
 
 # Vérifier le package.json — doit avoir :
-# "name": "@isomorph/cookie-consent-shared"
+# "name": "@isomorph-agency/cookie-consent-shared"
 # "publishConfig": { "access": "public" }
 
 npm publish --access public
@@ -81,7 +81,7 @@ npm publish --access public
 cd ../..
 ```
 
-Package publié : `@isomorph/cookie-consent@1.0.0`
+Package publié : `@isomorph-agency/cookie-consent@1.0.0`
 
 ---
 
@@ -136,14 +136,14 @@ Package publié : `strapi-plugin-cookie-consent-v4@1.0.0`
 
 ```bash
 # Vérifier que les packages sont accessibles
-npm info @isomorph/cookie-consent
+npm info @isomorph-agency/cookie-consent
 npm info strapi-plugin-cookie-consent
 npm info strapi-plugin-cookie-consent-v4
 
 # Tester l'installation dans un projet vierge
 mkdir /tmp/test-install && cd /tmp/test-install
 npm init -y
-npm install @isomorph/cookie-consent
+npm install @isomorph-agency/cookie-consent
 npm install strapi-plugin-cookie-consent
 ```
 

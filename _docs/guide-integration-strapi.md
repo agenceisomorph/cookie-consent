@@ -5,12 +5,12 @@
 
 ---
 
-## Strapi v5 — `@isomorph/strapi-plugin-cookie-consent`
+## Strapi v5 — `strapi-plugin-cookie-consent`
 
 ### Installation
 
 ```bash
-npm install @isomorph/strapi-plugin-cookie-consent
+npm install strapi-plugin-cookie-consent
 ```
 
 ### Activation
@@ -102,12 +102,12 @@ Le plugin inclut un rate limiter en mémoire sur l'endpoint POST (10 requêtes p
 
 ---
 
-## Strapi v4 — `@isomorph/strapi-plugin-cookie-consent-v4`
+## Strapi v4 — `strapi-plugin-cookie-consent-v4`
 
 ### Installation
 
 ```bash
-npm install @isomorph/strapi-plugin-cookie-consent-v4
+npm install strapi-plugin-cookie-consent-v4
 ```
 
 ### Activation
@@ -130,7 +130,7 @@ module.exports = {
 | Schéma | Identique (via shared/schema.json) | Identique |
 | Bootstrap | Identique (auto-config permission POST) | Identique |
 | Rate limiting | Inclus | Inclus |
-| Package name | `@isomorph/strapi-plugin-cookie-consent` | `@isomorph/strapi-plugin-cookie-consent-v4` |
+| Package name | `strapi-plugin-cookie-consent` | `strapi-plugin-cookie-consent-v4` |
 | Peer dependency | `@strapi/strapi ^5.0.0` | `@strapi/strapi ^4.0.0` |
 
 ### Vérification v4

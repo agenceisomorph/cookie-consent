@@ -1,5 +1,5 @@
 /**
- * Types consentement — @isomorph/cookie-consent
+ * Types consentement — @isomorph-agency/cookie-consent
  */
 
 /** État du consentement par catégorie */
