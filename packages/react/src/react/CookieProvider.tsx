@@ -51,7 +51,6 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferencesModal, setShowPreferencesModal] = useState(false);
   const [focusCategory, setFocusCategory] = useState<ConsentCategory | null>(null);
-  const [initialized, setInitialized] = useState(false);
 
   const adapter = useMemo(
     () => createStrapiAdapter({ apiUrl: config.strapiUrl }),
@@ -71,8 +70,6 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
     } else {
       setShowBanner(true);
     }
-
-    setInitialized(true);
   }, []);
 
   // ─── Persister le consentement (cookie + Strapi) ────────────────
@@ -188,8 +185,7 @@ export function CookieProvider({ children, config }: CookieProviderProps) {
     ],
   );
 
-  // Ne rien rendre avant l'initialisation (évite le flash du bandeau)
-  if (!initialized) return null;
-
+  // Toujours rendre les enfants — le bandeau est masqué tant que showBanner=false (init).
+  // Retourner null bloquerait le SSR Next.js (les children seraient absents du HTML initial).
   return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;
 }
