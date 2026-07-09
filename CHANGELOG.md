@@ -5,12 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-07-09
+
+### Fixed
+
+- **React package** (`@isomorph-agency/cookie-consent`)
+  - Republished with complete `dist/` — the 1.0.0 tarball was published without a prior
+    build and contained no compiled files, breaking both `.` and `./react` entry points
+  - `CookieProvider` no longer returns `null` before initialization — children are now
+    always rendered so Next.js SSR output includes the full page HTML
+- **Strapi plugins** (`strapi-plugin-cookie-consent`, `strapi-plugin-cookie-consent-v4`)
+  - Fixed runtime crash: controllers required the non-existent
+    `@isomorph/cookie-consent-shared` package instead of `@isomorph-agency/cookie-consent-shared`
+- **Packaging & CI**
+  - `prepublishOnly` guard on every publishable package: the tarball is verified against
+    declared `exports`/`main` paths before any publish
+  - CI publish job now uses the `NPM_TOKEN` secret (GitHub token is not valid on the npm
+    registry) and publishes the shared package first
+  - Pinned internal dependency `@isomorph-agency/cookie-consent-shared` to `^1.0.0`
+    (was `*`)
+
+### Deprecated
+
+- `@isomorphagency/cookie-consent` and `@isomorphagency/cookie-consent-shared`
+  (scope without hyphen, published by mistake) — use the `@isomorph-agency` scope
+
 ## [1.0.0] - 2026-03-21
 
 ### Added
 
 - Initial public release
-- **React package** (`@isomorph/cookie-consent`)
+- **React package** (`@isomorph-agency/cookie-consent`)
   - `CookieProvider` — global context with GCM V2 initialization
   - `CookieBanner` — fixed bottom banner, WCAG 2.1 AA accessible (focus trap, keyboard nav, ARIA)
   - `CookiePreferences` — detailed modal with per-category toggle switches

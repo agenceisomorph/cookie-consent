@@ -1,4 +1,4 @@
-name: CI — @isomorph/cookie-consent
+name: CI — @isomorph-agency/cookie-consent
 
 on:
   push:
@@ -156,17 +156,24 @@ jobs:
       - name: Build all packages
         run: npm run build
 
-      - name: Publish @isomorph/cookie-consent
+      # NPM_TOKEN = token npm "Automation" du compte isomorph-agency (secret repo GitHub).
+      # ⚠️ GITHUB_TOKEN ne fonctionne PAS sur registry.npmjs.org.
+      - name: Publish @isomorph-agency/cookie-consent-shared
+        run: npm publish --workspace=shared
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @isomorph-agency/cookie-consent
         run: npm publish --workspace=packages/react
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @isomorph/strapi-plugin-cookie-consent
+      - name: Publish strapi-plugin-cookie-consent
         run: npm publish --workspace=packages/strapi-v5
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @isomorph/strapi-plugin-cookie-consent-v4
+      - name: Publish strapi-plugin-cookie-consent-v4
         run: npm publish --workspace=packages/strapi-v4
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
