@@ -6,6 +6,10 @@
  */
 module.exports = {
   type: 'content-api',
+  // prefix vide : sans lui, Strapi v5 préfixe les routes de plugin par le nom
+  // du plugin (→ /api/cookie-consent/cookie-consents). On veut l'endpoint
+  // documenté /api/cookie-consents, aligné sur l'adapter React.
+  prefix: '',
   routes: [
     {
       method: 'POST',

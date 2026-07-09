@@ -12,7 +12,14 @@ module.exports = {
    * Public — pas d'authentification requise.
    */
   async create(ctx) {
-    const { valid, data, errors } = validateConsentBody(ctx.request.body);
+    // L'adapter React envoie { data: record } (format v4/v5) ; on accepte aussi
+    // un corps à plat. On déballe { data } le cas échéant avant validation.
+    const body = ctx.request.body;
+    const payload =
+      body && typeof body === 'object' && body.data !== undefined
+        ? body.data
+        : body;
+    const { valid, data, errors } = validateConsentBody(payload);
 
     if (!valid) {
       return ctx.badRequest('Données de consentement invalides.', { errors });
