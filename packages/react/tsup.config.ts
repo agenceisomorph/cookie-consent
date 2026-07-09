@@ -12,6 +12,15 @@ export default defineConfig([
     outDir: 'dist',
     external: ['react', 'react-dom'],
   },
+  // Server-safe entry (GCM inline script, importable depuis un RSC)
+  {
+    entry: ['src/server.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    sourcemap: true,
+    outDir: 'dist/server',
+    external: ['react', 'react-dom'],
+  },
   // React entry (components)
   {
     entry: ['src/react/index.ts'],

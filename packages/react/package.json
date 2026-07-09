@@ -15,6 +15,11 @@
       "import": "./dist/react/index.mjs",
       "require": "./dist/react/index.js",
       "types": "./dist/react/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server/server.mjs",
+      "require": "./dist/server/server.js",
+      "types": "./dist/server/server.d.ts"
     }
   },
   "files": [
