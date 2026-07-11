@@ -13,19 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (server-safe, importable depuis un Server Component Next.js) exposant
   `getInlineConsentScript` et les helpers GCM sans évaluer React au chargement.
   Le point d'entrée principal évalue `createContext` → inutilisable en RSC
-  (constat d'intégration 2026-07-09).
+  (constat d'intégration, 2026-07-09).
 
 ## [1.0.4] - 2026-07-11
 
 ### Added
 
-- **React package** : prop `icon` sur `CookieBanner` et `CookiePreferences`
-  (défaut : 🍪) — icône thématisable par site (ex. 🏀). Reprend aussi la
-  prop `title` de `CookieBanner` publiée en 1.0.3 mais restée hors merge (#5).
-
-### Changed
-
-- Icône bannière/modale agrandie (18 → 24 px) ; titre de la modale 15 → 17 px.
+- **React package** : props de personnalisation par site, **défauts strictement
+  inchangés** (aucun impact sur les sites existants) :
+  - `icon` (défaut 🍪) et `iconSize` (défaut 18) sur `CookieBanner` et
+    `CookiePreferences`
+  - `titleSize` (défaut 15) sur `CookiePreferences`
+  - reprend la prop `title` de `CookieBanner` publiée en 1.0.3 mais restée
+    hors merge (#5)
 
 ## [1.0.3] - 2026-07-11
 

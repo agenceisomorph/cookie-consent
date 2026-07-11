@@ -31,6 +31,10 @@ export interface CategoryConfig {
 export interface CookiePreferencesProps {
   /** Emoji/icône affichée à gauche du titre (défaut : 🍪) */
   icon?: string;
+  /** Taille de l'icône en px (défaut : 18) */
+  iconSize?: number;
+  /** Taille du titre en px (défaut : 15) */
+  titleSize?: number;
   categories?: CategoryConfig[];
   activeServices?: ActiveServices;
   saveLabel?: string;
@@ -75,6 +79,8 @@ function createAcceptAllConsent(): ConsentState {
 
 export function CookiePreferences({
   icon = '🍪',
+  iconSize = 18,
+  titleSize = 15,
   categories = DEFAULT_CATEGORIES,
   activeServices = {},
   saveLabel = 'Enregistrer mes choix',
@@ -244,8 +250,8 @@ export function CookiePreferences({
           borderRadius: '20px 20px 0 0',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span aria-hidden="true" style={{ fontSize: '24px' }}>{icon}</span>
-            <h2 style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
+            <span aria-hidden="true" style={{ fontSize: `${iconSize}px` }}>{icon}</span>
+            <h2 style={{ margin: 0, fontSize: `${titleSize}px`, fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
               {title}
             </h2>
           </div>

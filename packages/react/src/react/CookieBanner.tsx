@@ -18,6 +18,8 @@ import { useConsent } from './useConsent';
 export interface CookieBannerProps {
   /** Emoji/icône affichée à gauche du titre (défaut : 🍪) */
   icon?: string;
+  /** Taille de l'icône en px (défaut : 18) */
+  iconSize?: number;
   title?: string;
   message?: string;
   acceptLabel?: string;
@@ -28,6 +30,7 @@ export interface CookieBannerProps {
 
 export function CookieBanner({
   icon = '🍪',
+  iconSize = 18,
   title = 'Gestion des cookies',
   message = "Nous utilisons des cookies pour améliorer votre expérience, mesurer l'audience et personnaliser les contenus. Vous pouvez accepter ou refuser leur utilisation.",
   acceptLabel = 'Tout accepter',
@@ -97,7 +100,7 @@ export function CookieBanner({
             height: '36px',
             borderRadius: '10px',
             backgroundColor: 'color-mix(in srgb, var(--cc-primary, #ff6600) 12%, transparent)',
-            fontSize: '24px',
+            fontSize: `${iconSize}px`,
             flexShrink: 0,
           }}
         >
