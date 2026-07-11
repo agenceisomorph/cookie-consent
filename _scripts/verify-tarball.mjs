@@ -28,6 +28,15 @@ for (const field of ['main', 'module', 'types']) {
   if (typeof pkg[field] === 'string') required.add(pkg[field].replace(/^\.\//, ''));
 }
 
+// Plugin Strapi : le loader v5 résout la partie serveur via `strapi-server.js`
+// (ou l'export `strapi-server`), PAS via `main`. Un tarball sans ce fichier
+// installe un plugin qui ne charge jamais ses routes/bootstrap (bug 1.0.1).
+if (pkg.strapi?.kind === 'plugin') {
+  const hasServerExport = typeof pkg.exports === 'object'
+    && pkg.exports?.['./strapi-server'] !== undefined;
+  if (!hasServerExport) required.add('strapi-server.js');
+}
+
 if (required.size === 0) {
   console.error('✖ verify-tarball : aucun chemin à vérifier (ni exports, ni main) — package.json suspect.');
   process.exit(1);
