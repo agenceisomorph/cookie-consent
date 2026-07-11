@@ -1,11 +1,12 @@
 /**
- * CookiePreferences — Modale fine par catégorie de cookies.
+ * CookiePreferences — Modal de gestion fine des catégories.
  *
- * RGAA : focus trap complet, navigation clavier (Tab, Escape),
- * rôle dialog, aria-modal, contrastes ≥ 4.5:1, touch targets ≥ 44×44px.
- * CNIL : toutes catégories off par défaut, necessary non modifiable.
- *
- * Stylé avec Tailwind CSS. Couleurs primaires via CSS custom properties.
+ * Animation : backdrop fade-in + carte scale+fade depuis le centre.
+ * RGAA : focus trap complet, Escape, role dialog, aria-modal.
+ * CNIL : necessary non modifiable, aucune case pre-cochee (hors necessary).
+ * Services : filtre via activeServices depuis SERVICES_LIBRARY.
+ * "Tout accepter" : active visuellement (1s delay) puis enregistre.
+ * Styles : 100% inline — aucune dependance Tailwind.
  */
 
 'use client';
@@ -13,7 +14,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useConsent } from './useConsent';
 import { createDefaultConsent } from '../core/consent';
+import { SERVICES_LIBRARY, type ServiceKey } from '../services-library';
 import type { ConsentState, ConsentCategory } from '../types/consent.types';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ActiveServices = Partial<Record<ConsentCategory, ServiceKey[]>>;
 
 export interface CategoryConfig {
   key: ConsentCategory;
@@ -24,227 +30,403 @@ export interface CategoryConfig {
 
 export interface CookiePreferencesProps {
   categories?: CategoryConfig[];
+  activeServices?: ActiveServices;
   saveLabel?: string;
   refuseLabel?: string;
+  acceptAllLabel?: string;
   title?: string;
-  className?: string;
 }
+
+// ─── Catégories par défaut ────────────────────────────────────────────────────
 
 const DEFAULT_CATEGORIES: CategoryConfig[] = [
   {
     key: 'necessary',
     label: 'Nécessaires',
-    description: 'Sécurité du site, formulaires, sessions. Toujours actif.',
+    description: 'Indispensables au fonctionnement du site. Ne peuvent pas être désactivés.',
     locked: true,
   },
   {
     key: 'analytics',
     label: 'Analytique',
-    description: "Mesure d'audience (Google Analytics). Données anonymisées.",
+    description: "Mesure de l'audience et du comportement des visiteurs. Données anonymisées.",
   },
   {
     key: 'advertising',
     label: 'Publicité',
-    description: 'Publicités ciblées (Google Ads, Meta Pixel).',
+    description: "Permettent de vous proposer des publicités pertinentes sur d'autres sites.",
   },
   {
     key: 'functional',
     label: 'Fonctionnel',
-    description: 'YouTube, Google Maps, chat en ligne.',
+    description: "Améliorent l'expérience utilisateur grâce à des contenus enrichis.",
   },
 ];
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function createAcceptAllConsent(): ConsentState {
+  return { necessary: true, analytics: true, advertising: true, functional: true };
+}
+
+// ─── Composant principal ──────────────────────────────────────────────────────
+
 export function CookiePreferences({
   categories = DEFAULT_CATEGORIES,
+  activeServices = {},
   saveLabel = 'Enregistrer mes choix',
   refuseLabel = 'Tout refuser',
+  acceptAllLabel = 'Tout accepter',
   title = 'Gérer mes préférences cookies',
-  className = '',
 }: CookiePreferencesProps) {
-  const { consent, showPreferencesModal, closePreferences, saveCustom, refuseAll, focusCategory } =
+  const { consent, showPreferencesModal, closePreferences, saveCustom, refuseAll, acceptAll, focusCategory } =
     useConsent();
 
   const [localState, setLocalState] = useState<ConsentState>(consent ?? createDefaultConsent());
+  const [visible, setVisible] = useState(false);
+  const [acceptingAll, setAcceptingAll] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<ConsentCategory | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
-  // Sync quand la modale s'ouvre
   useEffect(() => {
     if (showPreferencesModal) {
       setLocalState(consent ?? createDefaultConsent());
+      setAcceptingAll(false);
+      const t = setTimeout(() => setVisible(true), 20);
+      return () => clearTimeout(t);
+    } else {
+      setVisible(false);
     }
   }, [showPreferencesModal, consent]);
 
-  // Focus le bouton fermer à l'ouverture
   useEffect(() => {
-    if (showPreferencesModal && closeRef.current) {
-      closeRef.current.focus();
-    }
-  }, [showPreferencesModal]);
+    if (visible && closeRef.current) closeRef.current.focus();
+  }, [visible]);
 
-  // Scroll + focus vers la catégorie ciblée (ouverture depuis une façade)
   useEffect(() => {
     if (showPreferencesModal && focusCategory && modalRef.current) {
-      const el = modalRef.current.querySelector(`[data-category="${focusCategory}"]`);
+      const el = modalRef.current.querySelector<HTMLElement>(`[data-category="${focusCategory}"]`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const toggle = el.querySelector('button[role="switch"]');
-        if (toggle instanceof HTMLElement) {
-          setTimeout(() => toggle.focus(), 300);
-        }
+        const toggle = el.querySelector<HTMLElement>('button[role="switch"]');
+        if (toggle) setTimeout(() => toggle.focus(), 300);
       }
     }
   }, [showPreferencesModal, focusCategory]);
 
-  // Focus trap + Escape
   useEffect(() => {
     if (!showPreferencesModal) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closePreferences();
-        return;
-      }
-
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { closePreferences(); return; }
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
           'button, [tabindex]:not([tabindex="-1"])',
         );
-        if (focusable.length === 0) return;
-
+        if (!focusable.length) return;
         const first = focusable[0]!;
         const last = focusable[focusable.length - 1]!;
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [showPreferencesModal, closePreferences]);
 
-  // Bloquer le scroll du body
   useEffect(() => {
-    if (showPreferencesModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    document.body.style.overflow = showPreferencesModal ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [showPreferencesModal]);
 
   const toggleCategory = useCallback((key: ConsentCategory) => {
-    if (key === 'necessary') return;
-    setLocalState((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
+    if (key === 'necessary' || acceptingAll) return;
+    setLocalState(prev => ({ ...prev, [key]: !prev[key] }));
+  }, [acceptingAll]);
 
-  const handleSave = useCallback(() => {
-    saveCustom(localState);
-  }, [saveCustom, localState]);
+  const handleSave = useCallback(() => saveCustom(localState), [saveCustom, localState]);
+
+  const handleRefuseAll = useCallback(() => {
+    setVisible(false);
+    setTimeout(refuseAll, 350);
+  }, [refuseAll]);
+
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(closePreferences, 350);
+  }, [closePreferences]);
+
+  const handleAcceptAll = useCallback(() => {
+    setAcceptingAll(true);
+    setLocalState(createAcceptAllConsent());
+    setTimeout(() => {
+      setVisible(false);
+      setTimeout(acceptAll, 350);
+    }, 900);
+  }, [acceptAll]);
 
   if (!showPreferencesModal) return null;
 
+  const primary = 'var(--cc-primary, #ff6600)';
+  const primaryText = 'var(--cc-primary-text, #ffffff)';
+
+  // Résoudre les services actifs par catégorie depuis SERVICES_LIBRARY
+  const resolvedServices = (catKey: ConsentCategory) => {
+    const keys = activeServices[catKey] ?? [];
+    return keys.map(k => SERVICES_LIBRARY[k]).filter(Boolean);
+  };
+
+  // Masquer les catégories explicitement vides dans activeServices (hors necessary)
+  const visibleCategories = categories.filter(cat => {
+    if (cat.locked) return true;
+    if (cat.key in activeServices) return (activeServices[cat.key] ?? []).length > 0;
+    return true;
+  });
+
   return (
     <>
-      {/* Overlay */}
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[10000] bg-black/50"
-        onClick={closePreferences}
         aria-hidden="true"
+        onClick={handleClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 10000,
+          backgroundColor: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(2px)',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 0.35s ease',
+        }}
       />
 
-      {/* Modale */}
+      {/* Modal */}
       <div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`fixed left-1/2 top-1/2 z-[10001] max-h-[80vh] w-[90vw] max-w-[540px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-white shadow-2xl ${className}`}
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          zIndex: 10001,
+          width: '90vw',
+          maxWidth: '540px',
+          maxHeight: '88vh',
+          overflowY: 'auto',
+          backgroundColor: '#ffffff',
+          borderRadius: '20px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
+          fontFamily: 'var(--font-poppins, system-ui, sans-serif)',
+          transform: visible
+            ? 'translate(-50%, -50%) scale(1)'
+            : 'translate(-50%, -52%) scale(0.96)',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1)',
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
-          <h2 className="m-0 text-lg font-semibold text-gray-900">{title}</h2>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '20px 24px',
+          borderBottom: '1px solid #f4f4f5',
+          position: 'sticky',
+          top: 0,
+          backgroundColor: '#ffffff',
+          zIndex: 1,
+          borderRadius: '20px 20px 0 0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span aria-hidden="true" style={{ fontSize: '18px' }}>🍪</span>
+            <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
+              {title}
+            </h2>
+          </div>
+
           <button
             ref={closeRef}
             type="button"
-            onClick={closePreferences}
+            onClick={handleClose}
             aria-label="Fermer les préférences cookies"
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center border-none bg-transparent text-2xl text-gray-600 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '32px', height: '32px', minHeight: '44px', minWidth: '44px',
+              borderRadius: '8px', border: 'none', backgroundColor: 'transparent',
+              color: '#a1a1aa', fontSize: '18px', cursor: 'pointer',
+              transition: 'background-color 0.15s ease, color 0.15s ease',
+              fontFamily: 'inherit', lineHeight: 1,
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5';
+              (e.currentTarget as HTMLButtonElement).style.color = '#3f3f46';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = '#a1a1aa';
+            }}
           >
-            &times;
+            ✕
           </button>
         </div>
 
         {/* Catégories */}
-        <div className="py-2">
-          {categories.map((cat) => (
-            <div
-              key={cat.key}
-              data-category={cat.key}
-              className="flex items-start justify-between border-b border-gray-100 px-6 py-4"
-            >
-              <div className="flex-1 pr-4">
-                <strong className="text-gray-900">{cat.label}</strong>
-                <p className="mt-1 text-[0.8125rem] text-gray-500">{cat.description}</p>
-              </div>
+        <div style={{ padding: '4px 0' }}>
+          {visibleCategories.map((cat, i) => {
+            const isExpanded = expandedCategory === cat.key;
+            const isActive = localState[cat.key] === true;
+            const services = resolvedServices(cat.key);
 
-              {cat.locked ? (
-                <span
-                  className="self-center whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold"
-                  style={{
-                    color: 'var(--cc-primary, #2563eb)',
-                    backgroundColor:
-                      'color-mix(in srgb, var(--cc-primary, #2563eb) 10%, transparent)',
-                  }}
-                  aria-label={`${cat.label} : toujours actif`}
-                >
-                  Actif
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={localState[cat.key] === true}
-                  aria-label={`${cat.label} : ${localState[cat.key] ? 'activé' : 'désactivé'}`}
-                  onClick={() => toggleCategory(cat.key)}
-                  className="relative flex min-h-[44px] min-w-[52px] flex-shrink-0 items-center self-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                >
-                  <span
-                    className="block h-7 w-[52px] rounded-full transition-colors duration-200"
+            return (
+              <div
+                key={cat.key}
+                data-category={cat.key}
+                style={{ borderBottom: i < visibleCategories.length - 1 ? '1px solid #f4f4f5' : 'none' }}
+              >
+                {/* Ligne principale */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 24px', gap: '12px',
+                }}>
+                  {/* Label cliquable pour expand */}
+                  <button
+                    type="button"
+                    onClick={() => services.length > 0 && setExpandedCategory(isExpanded ? null : cat.key)}
+                    aria-expanded={services.length > 0 ? isExpanded : undefined}
                     style={{
-                      backgroundColor: localState[cat.key]
-                        ? 'var(--cc-primary, #2563eb)'
-                        : '#d1d5db',
+                      flex: 1, textAlign: 'left', background: 'none', border: 'none', padding: 0,
+                      cursor: services.length > 0 ? 'pointer' : 'default',
+                      fontFamily: 'inherit', display: 'flex', alignItems: 'flex-start', gap: '8px',
                     }}
-                  />
-                  <span
-                    className="absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-white shadow transition-[left] duration-200"
-                    style={{
-                      left: localState[cat.key] ? '26px' : '4px',
-                    }}
-                    aria-hidden="true"
-                  />
-                </button>
-              )}
-            </div>
-          ))}
+                  >
+                    {services.length > 0 && (
+                      <span style={{
+                        display: 'inline-block', marginTop: '3px', fontSize: '9px', color: '#a1a1aa',
+                        transition: 'transform 0.2s ease',
+                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        flexShrink: 0,
+                      }}>▶</span>
+                    )}
+                    <div>
+                      <strong style={{ display: 'block', fontSize: '13.5px', fontWeight: 600, color: '#18181b', marginBottom: '2px' }}>
+                        {cat.label}
+                        {services.length > 0 && (
+                          <span style={{ marginLeft: '6px', fontSize: '11px', fontWeight: 400, color: '#a1a1aa' }}>
+                            ({services.length} service{services.length > 1 ? 's' : ''})
+                          </span>
+                        )}
+                      </strong>
+                      <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.55, color: '#a1a1aa' }}>
+                        {cat.description}
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Toggle ou badge */}
+                  {cat.locked ? (
+                    <span style={{
+                      flexShrink: 0, padding: '4px 10px', borderRadius: '20px',
+                      fontSize: '11.5px', fontWeight: 600, color: primary,
+                      backgroundColor: 'color-mix(in srgb, var(--cc-primary,#ff6600) 10%, transparent)',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      Actif
+                    </span>
+                  ) : (
+                    <ToggleSwitch
+                      checked={isActive}
+                      label={`${cat.label} : ${isActive ? 'activé' : 'désactivé'}`}
+                      onChange={() => toggleCategory(cat.key)}
+                    />
+                  )}
+                </div>
+
+                {/* Panel services — toujours rendu, animé via max-height */}
+                {services.length > 0 && (
+                  <div style={{
+                    maxHeight: isExpanded ? `${services.length * 72}px` : '0px',
+                    opacity: isExpanded ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: 'max-height 0.32s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease',
+                  }}>
+                    <div style={{
+                      margin: '0 24px 12px',
+                      borderRadius: '12px',
+                      backgroundColor: '#fafafa',
+                      border: '1px solid #f0f0f0',
+                      overflow: 'hidden',
+                    }}>
+                      {services.map((service, si) => (
+                        <div
+                          key={si}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px',
+                            borderBottom: si < services.length - 1 ? '1px solid #f0f0f0' : 'none',
+                          }}
+                        >
+                          <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center', width: '24px', justifyContent: 'center' }}>
+                            {service.logo}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#3f3f46' }}>
+                              {service.name}
+                            </span>
+                            {service.cookie && (
+                              <span style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', fontFamily: 'monospace', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {service.cookie}
+                              </span>
+                            )}
+                            {service.duration && (
+                              <span style={{ display: 'block', fontSize: '11px', color: '#a1a1aa', marginTop: '1px' }}>
+                                Durée : {service.duration}
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            aria-hidden="true"
+                            style={{
+                              flexShrink: 0, width: '8px', height: '8px', borderRadius: '50%',
+                              backgroundColor: (cat.locked || isActive) ? '#22c55e' : '#e4e4e7',
+                              transition: 'background-color 0.25s ease',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 border-t border-gray-200 px-6 py-4">
+        <div style={{
+          display: 'flex', gap: '8px', padding: '14px 24px 20px',
+          borderTop: '1px solid #f4f4f5',
+          position: 'sticky', bottom: 0,
+          backgroundColor: '#ffffff',
+          borderRadius: '0 0 20px 20px',
+          flexWrap: 'wrap',
+        }}>
           <button
             type="button"
-            onClick={refuseAll}
-            className="min-h-[44px] rounded-md border border-gray-300 bg-transparent px-5 py-2.5 font-medium text-gray-800 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            onClick={handleRefuseAll}
+            disabled={acceptingAll}
+            style={{
+              flex: '1 1 auto', minHeight: '44px', padding: '0 12px',
+              borderRadius: '10px', border: '1.5px solid #e4e4e7',
+              backgroundColor: '#ffffff', color: '#3f3f46',
+              fontSize: '13px', fontWeight: 500,
+              cursor: acceptingAll ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+              fontFamily: 'inherit', opacity: acceptingAll ? 0.4 : 1, whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => { if (!acceptingAll) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'; }}
           >
             {refuseLabel}
           </button>
@@ -252,16 +434,87 @@ export function CookiePreferences({
           <button
             type="button"
             onClick={handleSave}
-            className="min-h-[44px] rounded-md border-none px-5 py-2.5 font-semibold transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            disabled={acceptingAll}
             style={{
-              backgroundColor: 'var(--cc-primary, #2563eb)',
-              color: 'var(--cc-primary-text, #ffffff)',
+              flex: '1 1 auto', minHeight: '44px', padding: '0 12px',
+              borderRadius: '10px', border: '1.5px solid #e4e4e7',
+              backgroundColor: '#ffffff', color: '#3f3f46',
+              fontSize: '13px', fontWeight: 500,
+              cursor: acceptingAll ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+              fontFamily: 'inherit', opacity: acceptingAll ? 0.4 : 1, whiteSpace: 'nowrap',
             }}
+            onMouseEnter={e => { if (!acceptingAll) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'; }}
           >
             {saveLabel}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAcceptAll}
+            disabled={acceptingAll}
+            style={{
+              flex: '1 1 auto', minHeight: '44px', padding: '0 12px',
+              borderRadius: '10px', border: 'none',
+              backgroundColor: acceptingAll ? '#22c55e' : primary,
+              color: primaryText,
+              fontSize: '13px', fontWeight: 600,
+              cursor: acceptingAll ? 'default' : 'pointer',
+              transition: 'background-color 0.4s ease, opacity 0.15s ease',
+              fontFamily: 'inherit', whiteSpace: 'nowrap',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            }}
+            onMouseEnter={e => { if (!acceptingAll) (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+          >
+            {acceptingAll && <span aria-hidden="true" style={{ fontSize: '14px' }}>✓</span>}
+            {acceptingAll ? 'Accepté !' : acceptAllLabel}
           </button>
         </div>
       </div>
     </>
+  );
+}
+
+// ─── Toggle switch ────────────────────────────────────────────────────────────
+
+interface ToggleSwitchProps {
+  checked: boolean;
+  label: string;
+  onChange: () => void;
+}
+
+function ToggleSwitch({ checked, label, onChange }: ToggleSwitchProps) {
+  const primary = 'var(--cc-primary, #ff6600)';
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      style={{
+        position: 'relative', flexShrink: 0,
+        width: '48px', height: '28px', minWidth: '48px', minHeight: '44px',
+        padding: 0, border: 'none', backgroundColor: 'transparent',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', outline: 'none',
+      }}
+    >
+      <span style={{
+        position: 'absolute', top: '50%', left: 0, transform: 'translateY(-50%)',
+        width: '48px', height: '28px', borderRadius: '14px',
+        backgroundColor: checked ? primary : '#e4e4e7',
+        transition: 'background-color 0.25s ease',
+      }} />
+      <span style={{
+        position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+        left: checked ? '22px' : '2px',
+        width: '24px', height: '24px', borderRadius: '50%',
+        backgroundColor: '#ffffff',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
+        transition: 'left 0.2s cubic-bezier(0.16,1,0.3,1)',
+      }} />
+    </button>
   );
 }

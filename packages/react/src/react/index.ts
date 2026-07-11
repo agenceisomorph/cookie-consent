@@ -6,7 +6,7 @@ export { CookieBanner } from './CookieBanner';
 export type { CookieBannerProps } from './CookieBanner';
 
 export { CookiePreferences } from './CookiePreferences';
-export type { CookiePreferencesProps, CategoryConfig } from './CookiePreferences';
+export type { CookiePreferencesProps, CategoryConfig, ActiveServices } from './CookiePreferences';
 
 export { useConsent } from './useConsent';
 export type { UseConsentReturn } from './useConsent';

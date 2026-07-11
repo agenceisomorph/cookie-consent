@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Le point d'entrée principal évalue `createContext` → inutilisable en RSC
   (constat d'intégration 2026-07-09).
 
+## [1.0.3] - 2026-07-11
+
+### Changed
+
+- **React package — la bannière et la modale officielles sont désormais la version
+  « carte flottante » déployée sur les sites de l'agence**, qui vivait en copie vendorisée dans les sites sans avoir été
+  reversée au package :
+  - `CookieBanner` : carte flottante bas-droite (360px, animation fade/slide,
+    Escape = refuser, CNIL : refuser aussi visible qu'accepter)
+  - `CookiePreferences` : modale centrée animée, catégories + **services actifs
+    par catégorie** (`activeServices`, catalogue `SERVICES_LIBRARY` avec logos,
+    cookies et durées), « Tout accepter » avec activation visuelle
+  - **Styles 100 % inline** — plus aucune dépendance Tailwind : corrige le rendu
+    cassé chez les consommateurs (la 1.0.2 stylait en classes Tailwind sans
+    livrer de CSS)
+  - Logos des services embarqués en data URI (package autonome, ~12 Ko)
+- API rétrocompatible : `activeServices` optionnelle, mêmes exports + `ActiveServices`,
+  `SERVICES_LIBRARY`, `ServiceKey`.
+
 ## [1.0.2] - 2026-07-09
 
 ### Fixed

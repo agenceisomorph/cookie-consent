@@ -1,61 +1,60 @@
 /**
- * CookieBanner — Bandeau cookies RGAA.
+ * CookieBanner — Carte flottante RGAA/CNIL.
  *
- * Position : bas de page, pleine largeur, fixe.
- * CNIL : "Refuser" aussi visible que "Accepter", pas de case pré-cochée.
- * RGAA : focus trap, navigation clavier, rôle dialog, aria-labels.
+ * Apparaît 1 seconde après le chargement, bas à droite, avec animation
+ * fadeIn + slideUp. Design sobre et professionnel (Poppins, ombres douces).
  *
- * Stylé avec Tailwind CSS (stack ISOMORPH).
- * Couleurs via CSS custom properties pour la charte graphique client :
- * --cc-primary, --cc-primary-text
+ * CNIL : "Tout refuser" aussi visible que "Tout accepter".
+ * RGAA : role dialog, focus piégé, Escape = refuser.
+ * Styles : 100% inline — aucune dépendance Tailwind.
+ * Couleurs charte via CSS vars : --cc-primary, --cc-primary-text.
  */
 
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useConsent } from './useConsent';
 
 export interface CookieBannerProps {
-  /** Texte principal du bandeau */
   message?: string;
-  /** Label du bouton "Tout accepter" */
   acceptLabel?: string;
-  /** Label du bouton "Tout refuser" */
   refuseLabel?: string;
-  /** Label du bouton "Personnaliser" */
   customizeLabel?: string;
-  /** className additionnel pour le conteneur */
   className?: string;
 }
 
 export function CookieBanner({
-  message = "Ce site utilise des cookies pour améliorer votre expérience, mesurer l'audience et personnaliser les contenus.",
+  message = "Nous utilisons des cookies pour améliorer votre expérience, mesurer l'audience et personnaliser les contenus. Vous pouvez accepter ou refuser leur utilisation.",
   acceptLabel = 'Tout accepter',
   refuseLabel = 'Tout refuser',
   customizeLabel = 'Personnaliser',
-  className = '',
 }: CookieBannerProps) {
   const { showBanner, acceptAll, refuseAll, openPreferences } = useConsent();
-  const firstBtnRef = useRef<HTMLButtonElement>(null);
+  const [visible, setVisible] = useState(false);
 
-  // Focus le premier bouton quand le bandeau apparaît
+  // Apparition après 1 seconde avec transition smooth
   useEffect(() => {
-    if (showBanner && firstBtnRef.current) {
-      firstBtnRef.current.focus();
-    }
+    if (!showBanner) { setVisible(false); return; }
+    const t = setTimeout(() => setVisible(true), 1000);
+    return () => clearTimeout(t);
   }, [showBanner]);
 
   // Escape → refuser tout
   useEffect(() => {
     if (!showBanner) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') refuseAll();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') refuseAll(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [showBanner, refuseAll]);
 
+  const handleAccept = useCallback(() => { setVisible(false); setTimeout(acceptAll, 350); }, [acceptAll]);
+  const handleRefuse = useCallback(() => { setVisible(false); setTimeout(refuseAll, 350); }, [refuseAll]);
+
   if (!showBanner) return null;
+
+  // Couleurs primaires via CSS vars avec fallback
+  const primary = 'var(--cc-primary, #ff6600)';
+  const primaryText = 'var(--cc-primary-text, #ffffff)';
 
   return (
     <div
@@ -63,49 +62,147 @@ export function CookieBanner({
       aria-modal="false"
       aria-label="Gestion des cookies"
       aria-describedby="cc-banner-message"
-      className={`fixed bottom-0 left-0 right-0 z-[9999] border-t border-gray-200 bg-white px-6 py-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] ${className}`}
+      style={{
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        zIndex: 9999,
+        width: '360px',
+        maxWidth: 'calc(100vw - 32px)',
+        backgroundColor: '#ffffff',
+        borderRadius: '16px',
+        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07), 0 10px 30px -5px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+        padding: '24px',
+        fontFamily: 'var(--font-poppins, system-ui, sans-serif)',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+        pointerEvents: visible ? 'auto' : 'none',
+      }}
     >
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-4">
-        <p
-          id="cc-banner-message"
-          className="m-0 max-w-[700px] flex-[1_1_300px] text-[0.9375rem] leading-relaxed text-gray-800"
+      {/* En-tête */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            backgroundColor: 'color-mix(in srgb, var(--cc-primary, #ff6600) 12%, transparent)',
+            fontSize: '18px',
+            flexShrink: 0,
+          }}
         >
-          {message}
-        </p>
+          🍪
+        </span>
+        <strong style={{ fontSize: '15px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
+          Gestion des cookies
+        </strong>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Message */}
+      <p
+        id="cc-banner-message"
+        style={{
+          margin: '0 0 20px',
+          fontSize: '13px',
+          lineHeight: '1.65',
+          color: '#71717a',
+        }}
+      >
+        {message}
+      </p>
+
+      {/* Boutons */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* Ligne principale : Refuser | Accepter */}
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button
-            ref={firstBtnRef}
+
             type="button"
-            onClick={refuseAll}
+            onClick={handleRefuse}
             aria-label={refuseLabel}
-            className="min-h-[44px] min-w-[44px] rounded-md border border-gray-300 bg-transparent px-5 py-2.5 text-[0.9375rem] font-medium text-gray-800 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            style={{
+              flex: 1,
+              minHeight: '44px',
+              padding: '0 16px',
+              borderRadius: '10px',
+              border: '1.5px solid #e4e4e7',
+              backgroundColor: '#ffffff',
+              color: '#3f3f46',
+              fontSize: '13.5px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease, border-color 0.15s ease',
+              fontFamily: 'inherit',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'; }}
           >
             {refuseLabel}
           </button>
 
           <button
             type="button"
-            onClick={() => openPreferences()}
-            aria-label={customizeLabel}
-            className="min-h-[44px] min-w-[44px] rounded-md border border-gray-300 bg-transparent px-5 py-2.5 text-[0.9375rem] font-medium text-gray-800 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            {customizeLabel}
-          </button>
-
-          <button
-            type="button"
-            onClick={acceptAll}
+            onClick={handleAccept}
             aria-label={acceptLabel}
-            className="min-h-[44px] min-w-[44px] rounded-md border-none bg-[--cc-primary,#2563eb] px-5 py-2.5 text-[0.9375rem] font-semibold text-[--cc-primary-text,#ffffff] transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             style={{
-              backgroundColor: 'var(--cc-primary, #2563eb)',
-              color: 'var(--cc-primary-text, #ffffff)',
+              flex: 1,
+              minHeight: '44px',
+              padding: '0 16px',
+              borderRadius: '10px',
+              border: 'none',
+              backgroundColor: primary,
+              color: primaryText,
+              fontSize: '13.5px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'opacity 0.15s ease',
+              fontFamily: 'inherit',
             }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
           >
             {acceptLabel}
           </button>
         </div>
+
+        {/* Lien personnaliser */}
+        <button
+          type="button"
+          onClick={() => openPreferences()}
+          aria-label={customizeLabel}
+          style={{
+            minHeight: '36px',
+            padding: '0',
+            border: 'none',
+            backgroundColor: 'transparent',
+            color: '#a1a1aa',
+            fontSize: '12.5px',
+            fontWeight: 400,
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textDecorationColor: 'transparent',
+            transition: 'color 0.15s ease, text-decoration-color 0.15s ease',
+            fontFamily: 'inherit',
+            alignSelf: 'center',
+          }}
+          onMouseEnter={e => {
+            const b = e.currentTarget as HTMLButtonElement;
+            b.style.color = '#71717a';
+            b.style.textDecorationColor = '#71717a';
+          }}
+          onMouseLeave={e => {
+            const b = e.currentTarget as HTMLButtonElement;
+            b.style.color = '#a1a1aa';
+            b.style.textDecorationColor = 'transparent';
+          }}
+        >
+          {customizeLabel}
+        </button>
       </div>
     </div>
   );
