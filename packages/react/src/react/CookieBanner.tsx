@@ -16,6 +16,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useConsent } from './useConsent';
 
 export interface CookieBannerProps {
+  /** Emoji/icône affichée à gauche du titre (défaut : 🍪) */
+  icon?: string;
+  title?: string;
   message?: string;
   acceptLabel?: string;
   refuseLabel?: string;
@@ -24,6 +27,8 @@ export interface CookieBannerProps {
 }
 
 export function CookieBanner({
+  icon = '🍪',
+  title = 'Gestion des cookies',
   message = "Nous utilisons des cookies pour améliorer votre expérience, mesurer l'audience et personnaliser les contenus. Vous pouvez accepter ou refuser leur utilisation.",
   acceptLabel = 'Tout accepter',
   refuseLabel = 'Tout refuser',
@@ -60,7 +65,7 @@ export function CookieBanner({
     <div
       role="dialog"
       aria-modal="false"
-      aria-label="Gestion des cookies"
+      aria-label={title}
       aria-describedby="cc-banner-message"
       style={{
         position: 'fixed',
@@ -92,14 +97,14 @@ export function CookieBanner({
             height: '36px',
             borderRadius: '10px',
             backgroundColor: 'color-mix(in srgb, var(--cc-primary, #ff6600) 12%, transparent)',
-            fontSize: '18px',
+            fontSize: '24px',
             flexShrink: 0,
           }}
         >
-          🍪
+          {icon}
         </span>
         <strong style={{ fontSize: '15px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
-          Gestion des cookies
+          {title}
         </strong>
       </div>
 

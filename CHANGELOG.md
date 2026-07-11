@@ -15,6 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Le point d'entrée principal évalue `createContext` → inutilisable en RSC
   (constat d'intégration 2026-07-09).
 
+## [1.0.4] - 2026-07-11
+
+### Added
+
+- **React package** : prop `icon` sur `CookieBanner` et `CookiePreferences`
+  (défaut : 🍪) — icône thématisable par site (ex. 🏀). Reprend aussi la
+  prop `title` de `CookieBanner` publiée en 1.0.3 mais restée hors merge (#5).
+
+### Changed
+
+- Icône bannière/modale agrandie (18 → 24 px) ; titre de la modale 15 → 17 px.
+
 ## [1.0.3] - 2026-07-11
 
 ### Changed
