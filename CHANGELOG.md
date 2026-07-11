@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-07-11
+
 ### Added
 
 - **React package** : nouvelle entrée **`@isomorph-agency/cookie-consent/server`**
@@ -14,10 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `getInlineConsentScript` et les helpers GCM sans évaluer React au chargement.
   Le point d'entrée principal évalue `createContext` → inutilisable en RSC
   (constat d'intégration, 2026-07-09).
-
-## [1.0.4] - 2026-07-11
-
-### Added
+- **Tous les packages** : README.md dédié dans chaque dossier de package,
+  embarqué sur npm (demande Strapi Market du 13/04 — condition de publication
+  du plugin v5 sur le marketplace). Versions publiées : react 1.0.4,
+  strapi-plugin-cookie-consent 1.0.3, strapi-plugin-cookie-consent-v4 1.0.2,
+  shared 1.0.1.
 
 - **React package** : props de personnalisation par site, **défauts strictement
   inchangés** (aucun impact sur les sites existants) :
