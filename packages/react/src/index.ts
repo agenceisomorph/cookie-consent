@@ -11,5 +11,8 @@ export * from './types/adapter.types';
 // Adapters
 export * from './adapters';
 
+// Bibliothèque de services (affichés dans la modale de préférences)
+export * from './services-library';
+
 // React components
 export * from './react';
