@@ -34,7 +34,7 @@
     "consent-management",
     "strapi-v4"
   ],
-  "homepage": "https://github.com/agenceisomorph/cookie-consent#readme",
+  "homepage": "https://isomorph.fr/plugins/cookie-consent",
   "repository": {
     "type": "git",
     "url": "https://github.com/agenceisomorph/cookie-consent.git",
