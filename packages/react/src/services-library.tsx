@@ -85,7 +85,7 @@ export const SERVICES_LIBRARY: Record<ServiceKey, ServiceDefinition> = {
     duration: '13 mois',
     category: 'advertising',
   },
-  'youtube': {
+  youtube: {
     name: 'YouTube',
     logo: <Logo src={youtubeLogo} alt="YouTube" />,
     cookie: 'VISITOR_INFO1_LIVE, YSC',
@@ -99,7 +99,7 @@ export const SERVICES_LIBRARY: Record<ServiceKey, ServiceDefinition> = {
     duration: '6 mois',
     category: 'functional',
   },
-  'recaptcha': {
+  recaptcha: {
     name: 'Google reCAPTCHA',
     logo: <Logo src={recaptchaLogo} alt="reCAPTCHA" />,
     cookie: 'rc::a, rc::c',
