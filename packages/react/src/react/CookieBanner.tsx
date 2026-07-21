@@ -42,7 +42,10 @@ export function CookieBanner({
 
   // Apparition après 1 seconde avec transition smooth
   useEffect(() => {
-    if (!showBanner) { setVisible(false); return; }
+    if (!showBanner) {
+      setVisible(false);
+      return;
+    }
     const t = setTimeout(() => setVisible(true), 1000);
     return () => clearTimeout(t);
   }, [showBanner]);
@@ -50,13 +53,21 @@ export function CookieBanner({
   // Escape → refuser tout
   useEffect(() => {
     if (!showBanner) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') refuseAll(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') refuseAll();
+    };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [showBanner, refuseAll]);
 
-  const handleAccept = useCallback(() => { setVisible(false); setTimeout(acceptAll, 350); }, [acceptAll]);
-  const handleRefuse = useCallback(() => { setVisible(false); setTimeout(refuseAll, 350); }, [refuseAll]);
+  const handleAccept = useCallback(() => {
+    setVisible(false);
+    setTimeout(acceptAll, 350);
+  }, [acceptAll]);
+  const handleRefuse = useCallback(() => {
+    setVisible(false);
+    setTimeout(refuseAll, 350);
+  }, [refuseAll]);
 
   if (!showBanner) return null;
 
@@ -79,12 +90,14 @@ export function CookieBanner({
         maxWidth: 'calc(100vw - 32px)',
         backgroundColor: '#ffffff',
         borderRadius: '16px',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07), 0 10px 30px -5px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+        boxShadow:
+          '0 4px 6px -1px rgba(0,0,0,0.07), 0 10px 30px -5px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
         padding: '24px',
         fontFamily: 'var(--font-poppins, system-ui, sans-serif)',
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(16px)',
-        transition: 'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+        transition:
+          'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
         pointerEvents: visible ? 'auto' : 'none',
       }}
     >
@@ -106,7 +119,9 @@ export function CookieBanner({
         >
           {icon}
         </span>
-        <strong style={{ fontSize: '15px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}>
+        <strong
+          style={{ fontSize: '15px', fontWeight: 600, color: '#18181b', letterSpacing: '-0.01em' }}
+        >
           {title}
         </strong>
       </div>
@@ -129,7 +144,6 @@ export function CookieBanner({
         {/* Ligne principale : Refuser | Accepter */}
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
-
             type="button"
             onClick={handleRefuse}
             aria-label={refuseLabel}
@@ -147,8 +161,12 @@ export function CookieBanner({
               transition: 'background-color 0.15s ease, border-color 0.15s ease',
               fontFamily: 'inherit',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff'; }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f4f4f5';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#ffffff';
+            }}
           >
             {refuseLabel}
           </button>
@@ -171,8 +189,12 @@ export function CookieBanner({
               transition: 'opacity 0.15s ease',
               fontFamily: 'inherit',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = '0.88';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+            }}
           >
             {acceptLabel}
           </button>
@@ -198,12 +220,12 @@ export function CookieBanner({
             fontFamily: 'inherit',
             alignSelf: 'center',
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             const b = e.currentTarget as HTMLButtonElement;
             b.style.color = '#71717a';
             b.style.textDecorationColor = '#71717a';
           }}
-          onMouseLeave={e => {
+          onMouseLeave={(e) => {
             const b = e.currentTarget as HTMLButtonElement;
             b.style.color = '#a1a1aa';
             b.style.textDecorationColor = 'transparent';
