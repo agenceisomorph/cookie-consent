@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-cookie-consent-v4",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "GDPR cookie consent logging for Strapi v4 — Google Consent Mode V2, CNIL-compliant, IP anonymization, auto-configured public POST endpoint",
   "strapi": {
     "name": "cookie-consent",
