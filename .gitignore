@@ -10,3 +10,8 @@ test-results/
 .DS_Store
 CLAUDE.md
 package-lock.json
+
+# Fichiers internes ISOMORPH (jamais dans le repo public)
+_docs/deploiement-*
+_docs/publication-*
+tasks/
