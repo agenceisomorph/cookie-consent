@@ -87,7 +87,7 @@ Le plugin expose 2 services côté serveur :
 const count = await strapi
   .plugin('cookie-consent')
   .service('cookie-consent')
-  .countBySource('otrepaca.fr');
+  .countBySource('example.com');
 
 // Purger les consentements expirés
 const deleted = await strapi
@@ -215,7 +215,7 @@ module.exports = {
 const count = await strapi
   .plugin('cookie-consent')
   .service('cookie-consent')
-  .countBySource('otrepaca.fr');
+  .countBySource('example.com');
 
-console.log(`${count} consentements enregistrés pour otrepaca.fr`);
+console.log(`${count} consentements enregistrés pour example.com`);
 ```
