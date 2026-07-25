@@ -13,7 +13,7 @@ const mockRecord: ConsentRecord = {
   gcmVersion: 'v2',
   consentDate: '2026-03-21T10:00:00.000Z',
   expiryDate: '2027-04-21T10:00:00.000Z',
-  source: 'otrepaca.fr',
+  source: 'monsite.fr',
   action: 'custom',
 };
 

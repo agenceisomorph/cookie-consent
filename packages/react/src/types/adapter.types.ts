@@ -9,7 +9,7 @@ export interface ConsentAdapter {
 }
 
 export interface StrapiAdapterConfig {
-  /** URL de l'API Strapi (ex: https://admin.otrepaca.fr/api) */
+  /** URL de l'API Strapi (ex: https://admin.monsite.fr/api) */
   apiUrl: string;
   /** Timeout en ms (défaut: 5000) */
   timeout?: number;

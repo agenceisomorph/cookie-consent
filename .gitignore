@@ -15,3 +15,7 @@ package-lock.json
 _docs/deploiement-*
 _docs/publication-*
 tasks/
+
+# Artefacts de build : jamais dans le depot (sourcemaps = chemins locaux)
+*.tgz
+packages/*/dist/

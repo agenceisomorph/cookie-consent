@@ -7,7 +7,7 @@
  *
  * Usage :
  * ```tsx
- * <CookieProvider config={{ strapiUrl: '...', siteDomain: 'otrepaca.fr' }}>
+ * <CookieProvider config={{ strapiUrl: '...', siteDomain: 'monsite.fr' }}>
  *   {children}
  * </CookieProvider>
  * ```

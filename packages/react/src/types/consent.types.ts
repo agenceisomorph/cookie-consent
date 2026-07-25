@@ -40,9 +40,9 @@ export type ConsentCategory = 'necessary' | 'analytics' | 'advertising' | 'funct
 
 /** Configuration du CookieProvider */
 export interface CookieConsentConfig {
-  /** URL API Strapi (ex: https://admin.otrepaca.fr/api) */
+  /** URL API Strapi (ex: https://admin.monsite.fr/api) */
   strapiUrl: string;
-  /** Domaine du site (ex: otrepaca.fr) — utilisé comme "source" */
+  /** Domaine du site (ex: monsite.fr) — utilisé comme "source" */
   siteDomain: string;
   /** Catégories activées (défaut: toutes) */
   categories?: ConsentCategory[];
