@@ -103,11 +103,11 @@ describe('writeConsent', () => {
   it('inclut le domaine si spécifié', () => {
     const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
-    writeConsent(validState, { domain: '.otrepaca.fr' });
+    writeConsent(validState, { domain: '.monsite.fr' });
 
     expect(cookieSpy).toHaveBeenCalled();
     const writtenValue = cookieSpy.mock.calls[0]![0] as string;
-    expect(writtenValue).toContain('domain=.otrepaca.fr');
+    expect(writtenValue).toContain('domain=.monsite.fr');
 
     cookieSpy.mockRestore();
   });

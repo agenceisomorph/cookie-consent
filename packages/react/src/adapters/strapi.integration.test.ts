@@ -13,7 +13,7 @@ const mockRecord: ConsentRecord = {
   gcmVersion: 'v2',
   consentDate: '2026-03-21T10:00:00.000Z',
   expiryDate: '2027-04-21T10:00:00.000Z',
-  source: 'otrepaca.fr',
+  source: 'monsite.fr',
   action: 'accept_all',
 };
 
@@ -36,7 +36,7 @@ afterEach(() => {
 describe('StrapiAdapter — intégration', () => {
   it('cycle complet : création adapter + envoi consentement', async () => {
     const adapter = createStrapiAdapter({
-      apiUrl: 'https://admin.otrepaca.fr/api',
+      apiUrl: 'https://admin.monsite.fr/api',
     });
 
     await adapter.save(mockRecord);
@@ -46,7 +46,7 @@ describe('StrapiAdapter — intégration', () => {
     const call = fetchMock.mock.calls[0]!;
     const url = call[0] as string;
     const options = call[1] as RequestInit;
-    expect(url).toBe('https://admin.otrepaca.fr/api/cookie-consents');
+    expect(url).toBe('https://admin.monsite.fr/api/cookie-consents');
     expect(options.method).toBe('POST');
 
     const body = JSON.parse(options.body as string);
@@ -57,7 +57,7 @@ describe('StrapiAdapter — intégration', () => {
     expect(body.data.action).toBe('accept_all');
     expect(body.data.gcmVersion).toBe('v2');
     expect(body.data.sessionId).toBe('integration-test-001');
-    expect(body.data.source).toBe('otrepaca.fr');
+    expect(body.data.source).toBe('monsite.fr');
   });
 
   it('gère les erreurs serveur sans bloquer', async () => {
@@ -65,7 +65,7 @@ describe('StrapiAdapter — intégration', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createStrapiAdapter({
-      apiUrl: 'https://admin.otrepaca.fr/api',
+      apiUrl: 'https://admin.monsite.fr/api',
     });
 
     await expect(adapter.save(mockRecord)).resolves.not.toThrow();
@@ -79,7 +79,7 @@ describe('StrapiAdapter — intégration', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const adapter = createStrapiAdapter({
-      apiUrl: 'https://admin.otrepaca.fr/api',
+      apiUrl: 'https://admin.monsite.fr/api',
     });
 
     await expect(adapter.save(mockRecord)).resolves.not.toThrow();
