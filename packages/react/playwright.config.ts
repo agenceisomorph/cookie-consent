@@ -25,7 +25,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev --prefix tests/e2e/fixture',
+    // Chemin relatif a ce fichier : la config est lue depuis packages/react.
+    command: 'npm run dev --prefix ../../tests/e2e/fixture',
     port: 3099,
     reuseExistingServer: !process.env.CI,
   },

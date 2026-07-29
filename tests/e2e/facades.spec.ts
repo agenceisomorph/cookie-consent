@@ -21,9 +21,11 @@ test.describe('YouTube sans consentement', () => {
     await expect(page.locator('iframe[src*="youtube"]')).not.toBeVisible();
 
     // Façade visible avec message
-    await expect(page.getByText(/cookies fonctionnels/i)).toBeVisible();
+    // Phrase complete du message : « cookies fonctionnels » seul correspond
+    // aussi au libelle du bouton d'activation.
+    await expect(page.getByText(/ce contenu nécessite les cookies fonctionnels/i)).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /activer les cookies fonctionnels/i })
+      page.getByRole('button', { name: /activer les cookies fonctionnels/i }),
     ).toBeVisible();
   });
 
@@ -68,9 +70,11 @@ test.describe('Google Maps sans consentement', () => {
   test('affiche la façade', async ({ page }) => {
     await page.goto('/maps');
 
-    await expect(page.getByText(/cookies fonctionnels/i)).toBeVisible();
+    // Phrase complete du message : « cookies fonctionnels » seul correspond
+    // aussi au libelle du bouton d'activation.
+    await expect(page.getByText(/ce contenu nécessite les cookies fonctionnels/i)).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /activer les cookies fonctionnels/i })
+      page.getByRole('button', { name: /activer les cookies fonctionnels/i }),
     ).toBeVisible();
   });
 });
@@ -80,8 +84,12 @@ test.describe('Google Maps sans consentement', () => {
 test.describe('Lien footer', () => {
   test('le lien ouvre la modale de préférences après consentement', async ({ page }) => {
     await page.goto('/');
-    // D'abord accepter tout
+    // D'abord accepter tout, et attendre que le bandeau ait fini de s'effacer
+    // pour qu'il ne recouvre pas le pied de page au moment du clic.
     await page.getByRole('button', { name: 'Tout accepter' }).click();
+    await expect(
+      page.locator('[role="dialog"][aria-label="Gestion des cookies"]'),
+    ).not.toBeVisible();
 
     // Le lien "Gérer mes cookies" dans le footer
     await page.getByRole('button', { name: /gérer mes cookies/i }).click();

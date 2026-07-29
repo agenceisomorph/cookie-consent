@@ -102,13 +102,12 @@ jobs:
           path: packages/react/dist/
 
   # ──────────────────────────────────────────────
-  # Job 5 — E2E (Playwright) — uniquement sur develop
+  # Job 5 — E2E (Playwright) — sur toute PR et tout push
   # ──────────────────────────────────────────────
   e2e-tests:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -117,6 +116,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - run: npm install
+
+      # La fixture importe le paquet construit, pas les sources : les tests
+      # valident donc le bundle que les clients installent.
+      - name: Build packages
+        run: npm run build
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

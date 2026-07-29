@@ -15,6 +15,17 @@ async function clearConsentCookie(page: import('@playwright/test').Page) {
   await page.context().clearCookies();
 }
 
+/**
+ * Clique sur un bouton du bandeau et attend que le choix soit reellement
+ * enregistre. Le bandeau s'efface avec une animation de 350 ms avant que le
+ * cookie ne soit ecrit : sans cette attente, relire le cookie ou recharger la
+ * page part avant l'enregistrement et le test echoue sans raison.
+ */
+async function choisirDepuisLeBandeau(page: import('@playwright/test').Page, bouton: string) {
+  await page.getByRole('button', { name: bouton }).click();
+  await expect(page.locator(BANNER_SELECTOR)).not.toBeVisible();
+}
+
 // ─── Nouvelle visite ─────────────────────────────────────────────
 
 test.describe('Nouvelle visite', () => {
@@ -37,7 +48,10 @@ test.describe('Nouvelle visite', () => {
   test('0 requête Google Analytics avant consentement', async ({ page }) => {
     const gaRequests: string[] = [];
     page.on('request', (req) => {
-      if (req.url().includes('google-analytics.com') || req.url().includes('googletagmanager.com')) {
+      if (
+        req.url().includes('google-analytics.com') ||
+        req.url().includes('googletagmanager.com')
+      ) {
         gaRequests.push(req.url());
       }
     });
@@ -63,7 +77,7 @@ test.describe('Accepter tout', () => {
 
   test('crée le cookie de consentement', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Tout accepter' }).click();
+    await choisirDepuisLeBandeau(page, 'Tout accepter');
 
     const cookies = await page.context().cookies();
     const consentCookie = cookies.find((c) => c.name === COOKIE_NAME);
@@ -72,7 +86,7 @@ test.describe('Accepter tout', () => {
 
   test('le bandeau ne réapparaît pas au rechargement', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Tout accepter' }).click();
+    await choisirDepuisLeBandeau(page, 'Tout accepter');
     await page.reload();
     await expect(page.locator(BANNER_SELECTOR)).not.toBeVisible();
   });
@@ -94,7 +108,10 @@ test.describe('Refuser tout', () => {
   test('0 requête Google après refus', async ({ page }) => {
     const gaRequests: string[] = [];
     page.on('request', (req) => {
-      if (req.url().includes('google-analytics.com') || req.url().includes('googletagmanager.com')) {
+      if (
+        req.url().includes('google-analytics.com') ||
+        req.url().includes('googletagmanager.com')
+      ) {
         gaRequests.push(req.url());
       }
     });
@@ -123,10 +140,12 @@ test.describe('Personnaliser', () => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Personnaliser' }).click();
 
-    await expect(page.getByText('Nécessaires')).toBeVisible();
-    await expect(page.getByText('Analytique')).toBeVisible();
-    await expect(page.getByText('Publicité')).toBeVisible();
-    await expect(page.getByText('Fonctionnel')).toBeVisible();
+    // Correspondance exacte : « Publicité » en recherche partielle attrape aussi
+    // le mot « publicités » de la description de la categorie.
+    await expect(page.getByText('Nécessaires', { exact: true })).toBeVisible();
+    await expect(page.getByText('Analytique', { exact: true })).toBeVisible();
+    await expect(page.getByText('Publicité', { exact: true })).toBeVisible();
+    await expect(page.getByText('Fonctionnel', { exact: true })).toBeVisible();
   });
 
   test('les catégories optionnelles sont désactivées par défaut', async ({ page }) => {
@@ -163,7 +182,7 @@ test.describe('Personnaliser', () => {
     await page.getByRole('switch', { name: /analytique/i }).click();
     await expect(page.getByRole('switch', { name: /analytique/i })).toHaveAttribute(
       'aria-checked',
-      'true'
+      'true',
     );
 
     // Enregistrer
@@ -216,7 +235,7 @@ test.describe('Retour sur le site (cookie valide)', () => {
   test('pas de bandeau si cookie présent', async ({ page }) => {
     // D'abord accepter
     await page.goto('/');
-    await page.getByRole('button', { name: 'Tout accepter' }).click();
+    await choisirDepuisLeBandeau(page, 'Tout accepter');
 
     // Naviguer vers une autre page puis revenir
     await page.goto('/');
