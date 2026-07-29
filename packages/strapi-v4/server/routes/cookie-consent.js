@@ -5,12 +5,12 @@
  */
 module.exports = {
   type: 'content-api',
-  // prefix vide : sans lui, Strapi prefixe les routes de plugin par le nom du
-  // plugin (-> /api/cookie-consent/cookie-consents). L'adapter React poste sur
-  // /api/cookie-consents, comme le documente le README : sans ce reglage le
-  // consentement n'est jamais enregistre, le site recoit un 405 sans rien dire.
-  // Le paquet v5 porte deja cette ligne ; elle manquait ici (constat OTRE 29/07).
-  prefix: '',
+  // ATTENTION : contrairement au paquet v5, declarer `prefix: ''` ici ne sert a
+  // RIEN sur Strapi v4. Le chargeur fait `router.prefix = router.prefix || '/' +
+  // pluginName` : la chaine vide est falsy, donc remplacee. Cette route sort
+  // toujours sur /api/cookie-consent/cookie-consents.
+  // L'adresse documentee /api/cookie-consents est exposee par server/register.js,
+  // au niveau de l'application, ou le prefixe n'est pas impose.
   routes: [
     {
       method: 'POST',
