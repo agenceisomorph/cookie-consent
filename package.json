@@ -7,7 +7,8 @@
     "shared",
     "packages/react",
     "packages/strapi-v4",
-    "packages/strapi-v5"
+    "packages/strapi-v5",
+    "tests/e2e/fixture"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
