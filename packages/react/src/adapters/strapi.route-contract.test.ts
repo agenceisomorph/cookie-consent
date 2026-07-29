@@ -28,9 +28,7 @@ describe('contrat d adresse plugins Strapi <-> adapter React', () => {
     // Sans prefix vide, Strapi insere le nom du plugin dans l'adresse.
     expect(routes.prefix).toBe('');
 
-    const post = routes.routes.find(
-      (r: { method: string; path: string }) => r.method === 'POST'
-    );
+    const post = routes.routes.find((r: { method: string; path: string }) => r.method === 'POST');
     expect(post).toBeDefined();
     expect(post.path).toBe('/cookie-consents');
 
