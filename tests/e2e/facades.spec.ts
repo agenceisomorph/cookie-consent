@@ -21,12 +21,17 @@ test.describe('YouTube sans consentement', () => {
     await expect(page.locator('iframe[src*="youtube"]')).not.toBeVisible();
 
     // Façade visible avec message
-    // Phrase complete du message : « cookies fonctionnels » seul correspond
-    // aussi au libelle du bouton d'activation.
-    await expect(page.getByText(/ce contenu nécessite les cookies fonctionnels/i)).toBeVisible();
+    // Phrase complete du message : la categorie seule apparait aussi ailleurs
+    // dans la fenetre de preferences.
     await expect(
-      page.getByRole('button', { name: /activer les cookies fonctionnels/i }),
+      page.getByText(/ce contenu nécessite votre accord pour les cookies fonctionnels/i),
     ).toBeVisible();
+    // Le bouton nomme le resultat, pas le mecanisme. On verifie aussi qu'il
+    // reste dans une region annoncee comme bloquee, sinon un bouton homonyme
+    // ailleurs dans la page ferait passer le test a tort.
+    const facadeYoutube = page.getByRole('region', { name: /contenu bloqué/i });
+    await expect(facadeYoutube).toBeVisible();
+    await expect(facadeYoutube.getByRole('button', { name: 'Afficher ce contenu' })).toBeVisible();
   });
 
   test('clic sur le bouton ouvre les préférences sur la catégorie fonctionnel', async ({
@@ -34,7 +39,7 @@ test.describe('YouTube sans consentement', () => {
   }) => {
     await page.goto('/youtube');
 
-    await page.getByRole('button', { name: /activer les cookies fonctionnels/i }).click();
+    await page.getByRole('button', { name: 'Afficher ce contenu' }).click();
 
     // La modale de préférences s'ouvre
     await expect(page.locator('[role="dialog"][aria-modal="true"]')).toBeVisible();
@@ -47,7 +52,7 @@ test.describe('YouTube sans consentement', () => {
     await page.goto('/youtube');
 
     // Ouvrir préférences depuis la façade
-    await page.getByRole('button', { name: /activer les cookies fonctionnels/i }).click();
+    await page.getByRole('button', { name: 'Afficher ce contenu' }).click();
 
     // Activer le toggle fonctionnel
     await page.getByRole('switch', { name: /fonctionnel/i }).click();
@@ -70,12 +75,14 @@ test.describe('Google Maps sans consentement', () => {
   test('affiche la façade', async ({ page }) => {
     await page.goto('/maps');
 
-    // Phrase complete du message : « cookies fonctionnels » seul correspond
-    // aussi au libelle du bouton d'activation.
-    await expect(page.getByText(/ce contenu nécessite les cookies fonctionnels/i)).toBeVisible();
+    // Phrase complete du message : la categorie seule apparait aussi ailleurs
+    // dans la fenetre de preferences.
     await expect(
-      page.getByRole('button', { name: /activer les cookies fonctionnels/i }),
+      page.getByText(/ce contenu nécessite votre accord pour les cookies fonctionnels/i),
     ).toBeVisible();
+    const facadeMaps = page.getByRole('region', { name: /contenu bloqué/i });
+    await expect(facadeMaps).toBeVisible();
+    await expect(facadeMaps.getByRole('button', { name: 'Afficher ce contenu' })).toBeVisible();
   });
 });
 
