@@ -33,7 +33,8 @@ describe('adresse exposee', () => {
     // declarer la route hors du prefixe de plugin.
     const register = require(`${racine}/packages/strapi-v4/server/register.js`);
 
-    const declarees: Array<{ prefix?: string; routes: Array<{ path: string; method: string }> }> = [];
+    const declarees: Array<{ prefix?: string; routes: Array<{ path: string; method: string }> }> =
+      [];
     const strapi = {
       server: { routes: (r: (typeof declarees)[number]) => declarees.push(r) },
       log: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -42,7 +43,7 @@ describe('adresse exposee', () => {
     register({ strapi });
 
     const appLevel = declarees.find((d) =>
-      d.routes.some((r) => r.path === '/cookie-consents' && r.method === 'POST')
+      d.routes.some((r) => r.path === '/cookie-consents' && r.method === 'POST'),
     );
     expect(appLevel, 'aucune route /cookie-consents declaree').toBeDefined();
     expect(appLevel!.prefix).toBe('');
@@ -50,7 +51,8 @@ describe('adresse exposee', () => {
 });
 
 describe('forme du corps acceptee par le controleur v4', () => {
-  const charger = () => require(`${racine}/packages/strapi-v4/server/controllers/cookie-consent.js`);
+  const charger = () =>
+    require(`${racine}/packages/strapi-v4/server/controllers/cookie-consent.js`);
 
   const enregistrement = {
     sessionId: 'test',
