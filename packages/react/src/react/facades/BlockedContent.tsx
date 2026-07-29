@@ -6,6 +6,9 @@
  *
  * Règle ISOMORPH : jamais de contenu vide ni de placeholder silencieux.
  * Chaque composant dynamique DOIT informer l'utilisateur ET proposer une action.
+ *
+ * Design : 100 % styles inline — aucune dépendance Tailwind.
+ * Couleurs via CSS vars : --cc-primary, --cc-primary-text.
  */
 
 'use client';
@@ -21,6 +24,25 @@ const CATEGORY_LABELS: Record<ConsentCategory, string> = {
   advertising: 'publicitaires',
   functional: 'fonctionnels',
 };
+
+/** Icône cadenas — SVG inline, aucun appel réseau */
+function LockIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: '22px', height: '22px', display: 'block' }}
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
 
 export interface BlockedContentProps {
   /** Catégorie de cookies requise */
@@ -50,41 +72,125 @@ export function BlockedContent({
 }: BlockedContentProps) {
   const { isGranted, openPreferences } = useConsent();
 
-  // Si le consentement est donné, afficher le contenu
   if (isGranted(category)) {
     return <>{children}</>;
   }
 
   const categoryLabel = CATEGORY_LABELS[category] ?? category;
-  const defaultMessage = `Ce contenu nécessite les cookies ${categoryLabel} pour s'afficher.`;
-  const defaultButtonLabel = `Activer les cookies ${categoryLabel}`;
+  const displayMessage =
+    message ?? `Ce contenu nécessite votre accord pour les cookies ${categoryLabel}.`;
+  const displayButtonLabel = buttonLabel ?? 'Afficher ce contenu';
+
+  const primary = 'var(--cc-primary, #ff6600)';
+  const primaryText = 'var(--cc-primary-text, #ffffff)';
 
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center ${className}`}
-      style={{ minHeight }}
+      className={className}
+      style={{
+        minHeight,
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 24px',
+        textAlign: 'center',
+        borderRadius: '16px',
+        border: '1px solid color-mix(in srgb, var(--cc-primary, #ff6600) 18%, #e4e4e7)',
+        backgroundColor: 'color-mix(in srgb, var(--cc-primary, #ff6600) 5%, #ffffff)',
+        fontFamily: 'var(--font-poppins, system-ui, sans-serif)',
+      }}
       role="region"
-      aria-label={`${contentName} — consentement requis`}
+      aria-label={`Contenu bloqué : ${contentName}`}
     >
-      <p className="mb-1 text-base font-semibold text-gray-700">{contentName}</p>
+      {/* Icône cadenas dans un cercle teinté — même convention que l'icône bannière */}
+      <span
+        aria-hidden="true"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          backgroundColor: 'color-mix(in srgb, var(--cc-primary, #ff6600) 12%, transparent)',
+          color: primary,
+          marginBottom: '20px',
+          flexShrink: 0,
+        }}
+      >
+        <LockIcon />
+      </span>
 
-      <p className="mb-4 max-w-sm text-sm text-gray-500">{message ?? defaultMessage}</p>
+      {/* Nom du contenu */}
+      <p
+        style={{
+          margin: '0 0 8px',
+          fontSize: '15px',
+          fontWeight: 600,
+          color: '#18181b',
+          letterSpacing: '-0.01em',
+          lineHeight: 1.3,
+        }}
+      >
+        {contentName}
+      </p>
 
+      {/* Message explicatif */}
+      <p
+        style={{
+          margin: '0 0 24px',
+          maxWidth: '300px',
+          fontSize: '13px',
+          lineHeight: 1.65,
+          // #71717a tombait a 4,47:1 sur un fond teinte en vert (charte OTRE),
+          // sous le seuil RGAA de 4,5:1. Cette valeur donne 5,9:1 sur les quatre
+          // chartes du parc, sans effacer la hierarchie avec le titre.
+          color: '#5f5f68',
+        }}
+      >
+        {displayMessage}
+      </p>
+
+      {/* Bouton CTA — même style que "Tout accepter" dans CookieBanner */}
       <button
         type="button"
         onClick={() => openPreferences(category)}
-        className="min-h-[44px] rounded-md px-6 py-2.5 text-sm font-semibold transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         style={{
-          backgroundColor: 'var(--cc-primary, #2563eb)',
-          color: 'var(--cc-primary-text, #ffffff)',
+          minHeight: '44px',
+          padding: '0 24px',
+          borderRadius: '10px',
+          border: 'none',
+          // Pas de `outline: none` : l'anneau natif reste le filet de securite si
+          // les gestionnaires de focus ci-dessous ne s'appliquent pas.
+          backgroundColor: primary,
+          color: primaryText,
+          fontSize: '13.5px',
+          fontWeight: 600,
+          cursor: 'pointer',
+          transition: 'opacity 0.15s ease',
+          fontFamily: 'inherit',
+          letterSpacing: '-0.01em',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = '0.88';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+        }}
+        onFocus={(e) => {
+          // Anneau double : blanc intérieur + couleur primaire extérieure
+          // Visible sur fonds clairs comme foncés — RGAA 4.1 crit. 10.7
+          (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            '0 0 0 2px #ffffff, 0 0 0 5px var(--cc-primary, #ff6600)';
+        }}
+        onBlur={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
         }}
       >
-        {buttonLabel ?? defaultButtonLabel}
+        {displayButtonLabel}
       </button>
-
-      <p className="mt-4 text-xs text-gray-400">
-        Vous pouvez modifier vos préférences à tout moment depuis le pied de page.
-      </p>
     </div>
   );
 }
